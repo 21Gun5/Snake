@@ -5,110 +5,82 @@
 #include <ctime>
 #include <conio.h>
 #include <Windows.h>
-#include "setting.h"
-#include "drawSth.h"
+#include "data.h"
+#include "func.h"
 using namespace std;
 
 //食物类
-class Food
-{
-private:
-	//食物坐标
-	POS m_coordinate;
+class CFood
+{	
 public:
-	//坐标范围：
-	//x: 1 to CSetting::window_width - 30 闭区间
-	//y: 1 to CSetting::window_height - 2 闭区间
+	POS m_FoodPos;		//食物坐标
+
+	//构造函数，传入参数为蛇身坐标
+	CFood(vector<POS>& coord)
+	{
+		RandomXY(coord);
+	}
+
+	//获得随机位置
 	void RandomXY(vector<POS>& coord)
 	{
-		m_coordinate.x = rand() % (CSetting::window_width - 30) + 1;
-		m_coordinate.y = rand() % (CSetting::window_height - 2) + 1;
+		m_FoodPos.x = rand() % (g_window_width - 30) + 1;
+		m_FoodPos.y = rand() % (g_window_height - 2) + 1;
 		unsigned int i;
-		//原则上不允许食物出现在蛇的位置上，如果有，重新生成
+
+		//食物不可在蛇身上，若有要重新生成
 		for (i = 0; i < coord.size(); i++)
 		{
-			//食物出现在蛇身的位置上。重新生成
-			if (coord[i].x == m_coordinate.x && coord[i].y == m_coordinate.y)
+			//重新生成
+			if (coord[i].x == m_FoodPos.x && coord[i].y == m_FoodPos.y)
 			{
-				m_coordinate.x = rand() % (CSetting::window_width - 30) + 1;
-				m_coordinate.y = rand() % (CSetting::window_height - 2) + 1;
+				m_FoodPos.x = rand() % (g_window_width - 30) + 1;
+				m_FoodPos.y = rand() % (g_window_height - 2) + 1;
 				i = 0;
 			}
 		}
 	}
-	//默认构造函数
-	Food() {}
-	//构造函数，传入参数为蛇身坐标
-	Food(vector<POS>& coord)
-	{
-		RandomXY(coord);
-	}
-	//画出食物的位置
+
+	//打印食物
 	void DrawFood()
 	{
 		setColor(12, 0);
-		gotoxy(m_coordinate.x, m_coordinate.y);
+		gotoxy(m_FoodPos.x, m_FoodPos.y);
 		cout << "@";
 		setColor(7, 0);
 	}
-	//接口，获取食物位置
-	POS GetFoodCoordinate()
-	{
-		return m_coordinate;
-	}
 
+	//获取食物位置
+	POS GetFoodPos()
+	{
+		return m_FoodPos;
+	}
 };
-//贪吃蛇类，定义贪吃蛇的移动，打印，吃食物等等
-//地图范围width:2 to width-2  height: 2 to height-2
+
+//贪吃蛇类
 class Snake
 {
-private:
-	bool m_model; //true人机  false AI
-	int m_direction;
-	bool m_is_alive;
-private: //AI功能相关
-	bool m_chess[CSetting::window_width - 29 + 1][CSetting::window_height]; //AI功能用
-	//FindPathBFS m_AISnake;
-	POS map_size;
-public://蛇身坐标
-	vector<POS> m_coordinate;
+public:
+	vector<POS> m_SnakeBody;	//存储蛇身体的向量
+	int m_Dir;					//运动方向
+	bool m_IsAlive;				//是否存活
 
-public://默认构造函数
-	Snake(bool model = false) : m_model(model) //默认人机模式
+	//构造函数
+	Snake() :m_Dir(1), m_IsAlive(true)
 	{
-		map_size.x = CSetting::window_width - 29 + 1;
-		map_size.y = CSetting::window_height;
-		//移动方向向上
-		m_direction = 1;
-		m_is_alive = true;
-		POS snake_head;
-		snake_head.x = CSetting::window_width / 2 - 15;
-		snake_head.y = CSetting::window_height / 2;
+		POS snakeHead;
+		snakeHead.x = g_window_width / 2 - 15;
+		snakeHead.y = g_window_height / 2;
 
-		this->m_coordinate.push_back(snake_head);
-		snake_head.y++;
-		this->m_coordinate.push_back(snake_head);
-		snake_head.y++;
-		this->m_coordinate.push_back(snake_head); //初始蛇身长度三节
-
-		//围墙是障碍
-		for (int i = 0; i < CSetting::window_width - 29 + 1; i++)
-		{
-			m_chess[i][0] = true;
-			m_chess[i][CSetting::window_height - 1] = true;
-		}
-
-		for (int j = 0; j < CSetting::window_height - 1; j++)
-		{
-			m_chess[0][j] = true;
-			m_chess[CSetting::window_width - 29][j] = true;
-		}
-
+		m_SnakeBody.push_back(snakeHead);
+		snakeHead.y++;
+		m_SnakeBody.push_back(snakeHead);
+		snakeHead.y++;
+		m_SnakeBody.push_back(snakeHead); //初始蛇身长度三节
 	}
-	//设置游戏模式
-	void set_model(bool m) { m_model = m; }
+
 	//监听键盘
-	void listen_key_borad()
+	void ListenKeyBoard()
 	{
 		char ch;
 
@@ -119,27 +91,27 @@ public://默认构造函数
 			{
 			case 'w':
 			case 'W':
-				if (this->m_direction == DOWN)
+				if (this->m_Dir == DOWN)
 					break;
-				this->m_direction = UP;
+				this->m_Dir = UP;
 				break;
 			case 's':
 			case 'S':
-				if (this->m_direction == UP)
+				if (this->m_Dir == UP)
 					break;
-				this->m_direction = DOWN;
+				this->m_Dir = DOWN;
 				break;
 			case 'a':
 			case 'A':
-				if (this->m_direction == RIGHT)
+				if (this->m_Dir == RIGHT)
 					break;
-				this->m_direction = LEFT;
+				this->m_Dir = LEFT;
 				break;
 			case 'd':
 			case 'D':
-				if (this->m_direction == LEFT)
+				if (this->m_Dir == LEFT)
 					break;
-				this->m_direction = RIGHT;
+				this->m_Dir = RIGHT;
 				break;
 			case '+':
 				if (g_speed >= 25)
@@ -157,12 +129,12 @@ public://默认构造函数
 		}
 	}
 
-	//检测是否碰到自己
-	bool self_collision(POS head)
+	//是否撞到自己
+	bool IsMeetSelf(POS head)
 	{
-		for (unsigned int i = 1; i < m_coordinate.size(); i++)
+		for (unsigned int i = 1; i < m_SnakeBody.size(); i++)
 		{
-			if (head.x == m_coordinate[i].x && head.y == m_coordinate[i].y)
+			if (head.x == m_SnakeBody[i].x && head.y == m_SnakeBody[i].y)
 			{
 				return true;
 			}
@@ -171,14 +143,11 @@ public://默认构造函数
 	}
 
 	//移动贪吃蛇
-	void move_snake()
+	void MoveSnake()
 	{
-		//监听键盘
-		listen_key_borad();
-		//蛇头
-		POS head = m_coordinate[0];
-		//direction方向:1 上  2 下  3 左  4 右
-		switch (this->m_direction)
+		ListenKeyBoard();//监听键盘
+		POS head = m_SnakeBody[0];//蛇头
+		switch (this->m_Dir)
 		{
 		case UP:
 			head.y--;
@@ -194,132 +163,112 @@ public://默认构造函数
 			break;
 		}
 		//插入移动后新的蛇头
-		m_coordinate.insert(m_coordinate.begin(), head);
+		m_SnakeBody.insert(m_SnakeBody.begin(), head);
 	}
-	//判断是否吃到食物
-	bool is_eat_food(Food& f)
+
+	//是否吃到食物
+	bool IsEatenFood(CFood& f)
 	{
 		//获取食物坐标
-		POS food_coordinate = f.GetFoodCoordinate();
+		POS food_coordinate = f.GetFoodPos();
 		//吃到食物，食物重新生成，不删除蛇尾
-		if (m_coordinate[HEAD].x == food_coordinate.x && m_coordinate[HEAD].y == food_coordinate.y)
+		if (m_SnakeBody[HEAD].x == food_coordinate.x && m_SnakeBody[HEAD].y == food_coordinate.y)
 		{
-			f.RandomXY(m_coordinate);
+			f.RandomXY(m_SnakeBody);
 			return true;
 		}
 		else
 		{
 			//没有吃到食物，删除蛇尾
-			m_coordinate.erase(m_coordinate.end() - 1);
+			m_SnakeBody.erase(m_SnakeBody.end() - 1);
 			return false;
 		}
 	}
-	//判断贪吃蛇死了没
-	bool snake_is_alive()
+
+	//判断生死
+	bool IsAlive()
 	{
-		if (m_coordinate[HEAD].x <= 0 ||
-			m_coordinate[HEAD].x >= CSetting::window_width - 29 ||
-			m_coordinate[HEAD].y <= 0 ||
-			m_coordinate[HEAD].y >= CSetting::window_height - 1)
+		if (m_SnakeBody[HEAD].x <= 0 ||
+			m_SnakeBody[HEAD].x >= g_window_width - 29 ||
+			m_SnakeBody[HEAD].y <= 0 ||
+			m_SnakeBody[HEAD].y >= g_window_height - 1)
 		{
 			//超出边界
-			m_is_alive = false;
-			return m_is_alive;
+			m_IsAlive = false;
+			return m_IsAlive;
 		}
 		//和自己碰到一起
-		for (unsigned int i = 1; i < m_coordinate.size(); i++)
+		for (unsigned int i = 1; i < m_SnakeBody.size(); i++)
 		{
-			if (m_coordinate[i].x == m_coordinate[HEAD].x && m_coordinate[i].y == m_coordinate[HEAD].y)
+			if (m_SnakeBody[i].x == m_SnakeBody[HEAD].x && m_SnakeBody[i].y == m_SnakeBody[HEAD].y)
 			{
-				m_is_alive = false;
-				return m_is_alive;
+				m_IsAlive = false;
+				return m_IsAlive;
 			}
 		}
-		m_is_alive = true;
+		m_IsAlive = true;
 
-		return m_is_alive;
+		return m_IsAlive;
 	}
-	//画出贪吃蛇
-	void draw_snake()
+
+	//画蛇
+	void DrawSanke()
 	{
 		//设置颜色为浅绿色
 		setColor(10, 0);
-		for (unsigned int i = 0; i < this->m_coordinate.size(); i++)
+		for (unsigned int i = 0; i < this->m_SnakeBody.size(); i++)
 		{
-			gotoxy(m_coordinate[i].x, m_coordinate[i].y);
+			gotoxy(m_SnakeBody[i].x, m_SnakeBody[i].y);
 			cout << "*";
 		}
 		//恢复原来的颜色
 		setColor(7, 0);
 	}
-	//清除屏幕上的贪吃蛇
+
+	//清除蛇尾，画蛇前必做
 	void ClearSnake()
 	{
-		for (unsigned int i = 0; i < m_coordinate.size(); i++)
-		{
-			m_chess[m_coordinate[i].x][m_coordinate[i].y] = false;
-		}
-		gotoxy(m_coordinate[this->m_coordinate.size() - 1].x, m_coordinate[this->m_coordinate.size() - 1].y);
+		gotoxy(m_SnakeBody[this->m_SnakeBody.size() - 1].x, m_SnakeBody[this->m_SnakeBody.size() - 1].y);
 		cout << " ";
-
 	}
-	//获取贪吃蛇的长度
+
+	//获取蛇长
 	int GetSnakeSize()
 	{
-		return m_coordinate.size();
-	}
-	//获取当前游戏模式
-	bool GetModel()
-	{
-		return m_model;
+		return m_SnakeBody.size();
 	}
 };
 
-//主函数，组合各种类和资源，进行游戏。
 int main()
 {
-	CSetting setting;
-	//PrintInfo print_info;
+	//各对象实例化
 	Snake  snake;
-	//初始化游戏
-	setting.GameInit();
-	//游戏模式选择
-	DrawWelcome();
-
-
-	gotoxy(CSetting::window_width / 2 - 10, CSetting::window_height / 2 + 3);
-	system("pause");
-	//画地图
-	DrawMap();
-	DrawGameInfo();
-	//生成食物
-	Food food(snake.m_coordinate);
-	//游戏死循环
+	CFood food(snake.m_SnakeBody);
+	
+	GameInit();				//初始化
+	DrawWelcome();			//欢迎界面
+	system("pause");		//过渡到游戏界面
+	DrawMap();				//打印地图边框
+	DrawGameInfo();			//打印相关信息
+	
 	while (true)
 	{
-		//打印成绩
-		DrawScore(snake.GetSnakeSize());
-		//画出食物
-		food.DrawFood();
-		//清理蛇尾，每次画蛇前必做
-		snake.ClearSnake();
-		//判断是否吃到食物
-		snake.is_eat_food(food);
-		//根据用户模式选择不同的调度方式
-		snake.move_snake();
-		
-		//画蛇
-		snake.draw_snake();
-		//判断蛇是否还活着
-		if (!snake.snake_is_alive())
+		DrawScore(snake.GetSnakeSize());	//打印分数
+		food.DrawFood();					//打印食物
+		snake.ClearSnake();					//清理蛇尾
+		snake.IsEatenFood(food);			//是否吃到食物
+		snake.MoveSnake();					//让蛇跑起来
+		snake.DrawSanke();					//画蛇
+
+		if (!snake.IsAlive())				//是否活着
 		{
 			GameOver(snake.GetSnakeSize());
 			break;
 		}
-		//控制游戏速度
-		Sleep(g_speed);
+		Sleep(g_speed);						//控制游戏速度
 	}
 
+	//消耗多余字符，避免打印系统提示
 	cin.get();
 	cin.get();
 

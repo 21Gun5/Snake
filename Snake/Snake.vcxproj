@@ -19,16 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="drawSth.cpp" />
+    <ClCompile Include="func.cpp" />
     <ClCompile Include="food.cpp" />
-    <ClCompile Include="setting.cpp" />
+    <ClCompile Include="data.cpp" />
     <ClCompile Include="snake.cpp" />
     <ClCompile Include="SnakeMain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="drawSth.h" />
+    <ClInclude Include="func.h" />
     <ClInclude Include="food.h" />
-    <ClInclude Include="setting.h" />
+    <ClInclude Include="data.h" />
     <ClInclude Include="snake.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
