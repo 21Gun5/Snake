@@ -7,7 +7,7 @@
 #define RIGHT 4
 #define HEAD 0//蛇身数组0位置便是蛇头
 
-#define MAP_X 90//x一个字符，y方向2个字符，故2倍，若两字节字符，则同
+#define MAP_X 90//x一个字符，y方向2个字符，故2倍，若两字节字符，则同(90=60+30)
 #define MAP_Y 30
 #define MAP_X_WALL 60
 #define 空地 0

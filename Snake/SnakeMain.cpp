@@ -25,8 +25,8 @@ public:
 	//获得随机位置
 	void GetRandomPos(vector<POS> & snaBody)
 	{
-		m_FoodPos.x = rand() % (MAP_X - 30) + 1;//here
-		//m_FoodPos.x = rand() % (MAP_X - 50) + 1;
+		m_FoodPos.x = rand() % (MAP_X_WALL/2 - 2) + 1;//因为x是y一半，故/2
+		//m_FoodPos.x = rand() % (MAP_X - 50) + 1;here
 		m_FoodPos.y = rand() % (MAP_Y - 2) + 1;
 		
 		for (int i = 0; i < snaBody.size(); i++)		//遍历蛇身
@@ -34,8 +34,8 @@ public:
 			//食物不可出现在蛇身，若出现则重新生成
 			if (snaBody[i].x == m_FoodPos.x && snaBody[i].y == m_FoodPos.y)
 			{
-				m_FoodPos.x = rand() % (MAP_X - 30) + 1;//here
-				//m_FoodPos.x = rand() % (MAP_X - 50) + 1;
+				m_FoodPos.x = rand() % (MAP_X_WALL/2- 2) + 1;//因为x是y一半，故/2
+				//m_FoodPos.x = rand() % (MAP_X - 50) + 1;here
 				m_FoodPos.y = rand() % (MAP_Y - 2) + 1;
 			}
 		}
@@ -45,9 +45,9 @@ public:
 	void DrawFood()
 	{
 		setColor(12, 0);	//食物红色
-		gotoxy(m_FoodPos.x, m_FoodPos.y);
-		//gotoxy4s(m_FoodPos.x, m_FoodPos.y);//here
-		cout << "$";
+		//gotoxy(m_FoodPos.x, m_FoodPos.y);
+		gotoxy4s(m_FoodPos.x, m_FoodPos.y);//here
+		cout << "□";
 		setColor(7, 0);		//再换回来
 	}
 
@@ -71,7 +71,7 @@ public:
 	{
 		POS snakeHead;
 		//snakeHead.x = MAP_X / 2 - 15;
-		snakeHead.x = MAP_X / 2 - 15 - 10;
+		snakeHead.x = MAP_X_WALL / 4;//因为x1B，y2B，故x/4，而y/2
 		snakeHead.y = MAP_Y / 2;
 
 		m_SnakeBody.push_back(snakeHead);
@@ -184,7 +184,7 @@ public:
 	{
 		//是否撞墙
 		if (m_SnakeBody[HEAD].x <= 0 ||
-			m_SnakeBody[HEAD].x >= MAP_X_WALL - 1 ||
+			m_SnakeBody[HEAD].x >= MAP_X_WALL/2 - 1 ||//因为x是y一半，故/2，好多这样的问题，x都要是y的一半
 			m_SnakeBody[HEAD].y <= 0 ||
 			m_SnakeBody[HEAD].y >= MAP_Y - 1)
 		{
@@ -212,10 +212,10 @@ public:
 		for (int i = 0; i < m_SnakeBody.size(); i++)
 		{
 			//□■
-			gotoxy(m_SnakeBody[i].x, m_SnakeBody[i].y);//here
-			//gotoxy4s(m_SnakeBody[i].x, m_SnakeBody[i].y);
-			//cout << "■";
-			cout << "*";
+			//gotoxy(m_SnakeBody[i].x, m_SnakeBody[i].y);//here
+			gotoxy4s(m_SnakeBody[i].x, m_SnakeBody[i].y);
+			cout << "■";
+			//cout << "*";//here
 		}
 
 		setColor(7, 0);		//恢复原来颜色
@@ -225,12 +225,12 @@ public:
 	void ClearSnake()
 	{
 		//画蛇前必做，最后一节蛇身用空格表示
-		gotoxy(m_SnakeBody[m_SnakeBody.size() - 1].x, m_SnakeBody[m_SnakeBody.size() - 1].y);
-		//gotoxy4s(m_SnakeBody[m_SnakeBody.size() - 1].x, m_SnakeBody[m_SnakeBody.size() - 1].y);here
+		//gotoxy(m_SnakeBody[m_SnakeBody.size() - 1].x, m_SnakeBody[m_SnakeBody.size() - 1].y);
+		gotoxy4s(m_SnakeBody[m_SnakeBody.size() - 1].x, m_SnakeBody[m_SnakeBody.size() - 1].y);//here
 
 
-		//cout << "  ";here
-		cout << " ";
+		cout << "  ";//here
+		//cout << " ";
 	}
 
 	//获取蛇长
@@ -247,8 +247,10 @@ int main()
 	Snake snake;
 	CFood food(snake.m_SnakeBody);
 	bool isRunning = 0;
+	//bool isRunning = 1;//恒为1，测试用
 
 	GameInit();				//初始化
+
 	DrawWelcome();			//欢迎界面
 
 	char ch = _getch();

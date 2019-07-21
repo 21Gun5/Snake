@@ -53,14 +53,15 @@ void DrawMap()
 	//for (int i = 0; i < MAP_X; i++)
 	//	cout << "#";
 
-	for (int x = 0; x < MAP_X; x++)
+	for (int x = 0; x < MAP_X; x+=2)//要x+=2，还是因为x1b，y2b老问题
 	{
 		for (int y = 0; y < MAP_Y; y++)
 		{
 			if (g_MAP[x][y]== 障碍)
 			{
 				gotoxy(x, y);
-				cout << "#";
+				cout << "※";//占2B
+				//cout << "#";
 			}
 			else
 			{
@@ -98,7 +99,6 @@ void DrawScore(int score)
 //打印操作说明
 void DrawGameInfo()
 {
-
 	gotoxy(MAP_X-22+2, 18);
 	cout << "操作说明：" << endl;
 	gotoxy(MAP_X-22, 20);
@@ -120,7 +120,7 @@ void GameInit()
 	{
 		for (int y = 0; y < MAP_Y; y++)
 		{
-			if (x == 0 || x == MAP_X - 1 || y == 0 || y == MAP_Y - 1 || x== MAP_X_WALL || (x>MAP_X_WALL && y== MAP_Y/2))
+			if (x == 0 || x == MAP_X-2  || y == 0 || y == MAP_Y - 1 || x== MAP_X_WALL || (x>MAP_X_WALL && y== MAP_Y/2))//x == MAP_X-2还是xy轴的老问题
 			{
 				g_MAP[x][y] = 障碍;
 			}
