@@ -18,6 +18,7 @@
 //全局变量
 extern int dir[4][2];
 extern int g_speed;			//结合sleep使用，越大越慢
+//extern bool g_isRunning;//是否暂停
 //extern int g_window_width;	//窗口宽度
 //extern int g_window_height;	//窗口高度
 

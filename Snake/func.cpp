@@ -1,5 +1,6 @@
 #include <iostream>
 #include <windows.h>
+#include <string>
 #include <time.h>
 #include "data.h"
 #include "func.h"
@@ -83,6 +84,8 @@ void GameOver(int score)
 
 	gotoxy(MAP_X / 2 - 20, MAP_Y / 2 - 3);
 	cout << "Scores: " << score - 3 << endl;
+
+	return;
 }
 
 //打印分数
@@ -105,6 +108,10 @@ void DrawGameInfo()
 	cout << "W: 上    S: 下" << endl;
 	gotoxy(MAP_X-22, 22);
 	cout << "A: 左    D: 右" << endl;
+	gotoxy(MAP_X - 22, 24);
+	cout << "Q: 暂停游戏" << endl;
+	gotoxy(MAP_X - 22, 26);
+	cout << "任意键: 恢复游戏" << endl;
 }
 
 //初始化工作
@@ -140,6 +147,9 @@ void GameInit()
 
 	//初始化随机数种子
 	srand((unsigned int)time(0));
+
+	//播放BGM
+	PlaySoundA("conf\\BGM.wav", NULL, SND_ASYNC | SND_NODEFAULT);
 }
 
 //移动光标
@@ -168,6 +178,16 @@ void setColor(unsigned short ForeColor, unsigned short BackGroundColor)
 	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);//获取当前窗口句柄
 	SetConsoleTextAttribute(handle, ForeColor + BackGroundColor * 0x10);//设置颜色
 }
+
+//播放声音
+
+//void PlaySnd(string sound)
+//{
+//	//播放BGM
+//	//conf\\BGM.wav
+//	sound = "conf\\BGM.wav";
+//	PlaySoundA("conf\\BGM.wav", NULL, SND_ASYNC | SND_NODEFAULT);
+//}
 
 ////////////////////////////////////////////////
 

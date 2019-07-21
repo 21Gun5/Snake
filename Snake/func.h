@@ -1,4 +1,5 @@
 #pragma once
+#pragma comment(lib,"winmm.lib")//播放BGM
 
 void DrawWelcome();				//欢迎界面
 void DrawMap();					//打印地图边界

@@ -8,6 +8,7 @@
 #include "func.h"
 #include "food.h"
 #include "snake.h"
+#pragma comment(lib,"winmm.lib")//播放BGM
 using namespace std;
 
 //食物类
@@ -59,7 +60,7 @@ public:
 };
 
 //贪吃蛇类
-class Snake
+class CSnake
 {
 public:
 	vector<POS> m_SnakeBody;	//存储蛇身体的向量
@@ -67,7 +68,7 @@ public:
 	bool m_IsAlive;				//是否存活
 
 	//构造函数
-	Snake() :m_Dir(1), m_IsAlive(true)
+	CSnake() :m_Dir(1), m_IsAlive(true)
 	{
 		POS snakeHead;
 		//snakeHead.x = MAP_X / 2 - 15;
@@ -88,7 +89,8 @@ public:
 
 		if (_kbhit())				//kbhit非阻塞函数 
 		{
-			ch = _getch();			//使用 getch 函数获取键盘输入 
+			ch = _getch();			//使用 getch 函数获取键盘输入
+			//PlaySoundA("conf\\click.wav", NULL, SND_ASYNC | SND_NODEFAULT);
 			switch (ch)
 			{
 			case 'w':
@@ -116,8 +118,23 @@ public:
 				this->m_Dir = RIGHT;
 				break;
 			//暂停及恢复
-			//case ' ':
+			case 'q':
+			{	//case里定义变量要加大括号
 
+				setColor(12, 0);
+				gotoxy(MAP_X_WALL + 2, 1);
+				cout << "PAUSE" << endl;//暂停的状态标识
+
+				char tmp = _getch();	//利用阻塞函数暂停游戏
+
+				gotoxy(MAP_X_WALL + 2, 1);
+				cout << "     " << endl;//恢复游戏时，将提示清空
+				break;
+			}
+		
+			//case ' ':
+			//	g_isRunning = true;
+			//	break;
 			//键盘控制速度
 			//case '+':
 			//	if (g_speed >= 25)
@@ -131,6 +148,7 @@ public:
 			//		g_speed += 25;
 			//	}
 			//	break;
+
 			default:
 				break;
 			}
@@ -168,6 +186,8 @@ public:
 		//坐标重合即吃到食物（吃到后则重新生成食物，不删除蛇尾
 		if (m_SnakeBody[HEAD].x == foodPos.x && m_SnakeBody[HEAD].y == foodPos.y)
 		{
+			//PlaySoundA("conf\\eat.wav", NULL, SND_ASYNC | SND_NODEFAULT);
+
 			food.GetRandomPos(m_SnakeBody);
 			return true;
 		}
@@ -188,6 +208,8 @@ public:
 			m_SnakeBody[HEAD].y <= 0 ||
 			m_SnakeBody[HEAD].y >= MAP_Y - 1)
 		{
+			//PlaySoundA("conf\\duang.wav", NULL, SND_ASYNC | SND_NODEFAULT);
+
 			m_IsAlive = false;
 			return m_IsAlive;
 		}
@@ -241,10 +263,11 @@ public:
 	}
 };
 
+
 int main()
 {
 	//各对象实例化
-	Snake snake;
+	CSnake snake;
 	CFood food(snake.m_SnakeBody);
 	bool isRunning = 0;
 	//bool isRunning = 1;//恒为1，测试用
@@ -257,7 +280,7 @@ int main()
 	switch (ch)
 	{
 	case '1':
-		isRunning = 1;
+		isRunning = true;
 		break;
 	case '2':
 		gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 3);
@@ -265,7 +288,9 @@ int main()
 		//cin.get();
 		return 0;
 	default:
-		break;
+		gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 3);
+		cout << "输入错误";
+		return 0;
 	}
 
 	//system("pause");		//提示按键到下一界面
@@ -291,7 +316,7 @@ int main()
 
 	//消耗多余字符，避免打印系统提示
 	cin.get();
-	cin.get();
+	//cin.get();
 
 	return 0;
 }
