@@ -10,39 +10,66 @@ using namespace std;
 //打印欢迎界面
 void DrawWelcome()
 {
-	cout << "Welcome!" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 5);
+	cout << "游戏导引" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 3);
+	cout << "1. 开始游戏" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 1);
+	cout << "2. 退出游戏" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 1);
+	cout << "请输入您的选择-> ";
+
 }
 
 //打印地图边界
 void DrawMap()
 {
 	system("cls");//先清屏
-	//上边界
-	for (int i = 0; i < g_window_width; i++)
-		cout << "#";
-	cout << endl;
-	//其他边界here
-	for (int i = 0; i < g_window_height - 2; i++)
+
+	////上边界
+	//for (int i = 0; i < MAP_X; i++)
+	//	cout << "#";
+	//cout << endl;
+	////其他边界here
+	//for (int i = 0; i < MAP_Y - 2; i++)
+	//{
+	//	for (int j = 0; j < MAP_X; j++)
+	//	{
+	//		if (i == 13 && j >= MAP_X - 29)
+	//		{
+	//			cout << "#";
+	//			continue;
+	//		}
+	//		if (j == 0 || j == MAP_X - 29 || j == MAP_X - 1)
+	//		{
+	//			cout << "#";
+	//		}
+	//		else
+	//			cout << " ";
+	//	}
+	//	cout << endl;
+	//}
+	////下边界
+	//for (int i = 0; i < MAP_X; i++)
+	//	cout << "#";
+
+	for (int x = 0; x < MAP_X; x++)
 	{
-		for (int j = 0; j < g_window_width; j++)
+		for (int y = 0; y < MAP_Y; y++)
 		{
-			if (i == 13 && j >= g_window_width - 29)
+			if (g_MAP[x][y]== 障碍)
 			{
-				cout << "#";
-				continue;
-			}
-			if (j == 0 || j == g_window_width - 29 || j == g_window_width - 1)
-			{
+				gotoxy(x, y);
 				cout << "#";
 			}
 			else
+			{
+				gotoxy(x, y);
 				cout << " ";
+			}
 		}
-		cout << endl;
 	}
-	//下边界
-	for (int i = 0; i < g_window_width; i++)
-		cout << "#";
+
 }
 
 //游戏结束
@@ -50,32 +77,33 @@ void GameOver(int score)
 {
 	setColor(12, 0);
 
-	gotoxy(g_window_width / 2 - 20, g_window_height / 2 - 5);
+	gotoxy(MAP_X / 2 - 20, MAP_Y / 2 - 5);
 	cout << "GAME OVER! " << endl;
 
-	gotoxy(g_window_width / 2 - 20, g_window_height / 2 - 3);
+	gotoxy(MAP_X / 2 - 20, MAP_Y / 2 - 3);
 	cout << "Scores: " << score - 3 << endl;
 }
 
 //打印分数
 void DrawScore(int score)
 {
-	gotoxy(g_window_width - 22 + 14, 6);
+	gotoxy(MAP_X - 22 + 14, 6);
 	cout << "  ";
-	gotoxy(g_window_width - 22 + 14, 4);
+	gotoxy(MAP_X - 22 + 14, 4);
 	cout << "  ";
-	gotoxy(g_window_width - 22, 6);
+	gotoxy(MAP_X - 22, 6);
 	cout << "当前分数: " << score - 3 << endl;//-3，原始蛇长为3
 }
 
 //打印操作说明
 void DrawGameInfo()
 {
-	gotoxy(g_window_width - 22, 18);
+
+	gotoxy(MAP_X-22+2, 18);
 	cout << "操作说明：" << endl;
-	gotoxy(g_window_width - 22, 20);
+	gotoxy(MAP_X-22, 20);
 	cout << "W: 上    S: 下" << endl;
-	gotoxy(g_window_width - 22, 22);
+	gotoxy(MAP_X-22, 22);
 	cout << "A: 左    D: 右" << endl;
 }
 
@@ -83,9 +111,25 @@ void DrawGameInfo()
 void GameInit()
 {
 	//设置窗口大小here
-	char buf[32];
-	sprintf_s(buf, "mode con cols=%d lines=%d", g_window_width, g_window_height);
-	system(buf);
+	//char buf[32];
+	//sprintf_s(buf, "mode con cols=%d lines=%d", MAP_X, MAP_Y);
+	//system(buf);
+
+	//设置地图
+	for (int x = 0; x < MAP_X; x++)
+	{
+		for (int y = 0; y < MAP_Y; y++)
+		{
+			if (x == 0 || x == MAP_X - 1 || y == 0 || y == MAP_Y - 1 || x== MAP_X_WALL || (x>MAP_X_WALL && y== MAP_Y/2))
+			{
+				g_MAP[x][y] = 障碍;
+			}
+			else
+			{
+				g_MAP[x][y] = 空地;
+			}
+		}
+	}
 
 	//隐藏光标
 	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -243,15 +287,8 @@ void DrawMouse()
 
 // 4. 移动蛇
 // 5. 吃食物，变长
+// 6. 二维数组存地图，即要解决的规划问题
 
-//int main()
-//{
-//	//WriteChar(10, 20, "hello");
-//	//moveSth();
-//	//DrawMouse();
-//	
-//	return 0;
-//}
 
 
 

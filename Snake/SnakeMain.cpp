@@ -25,18 +25,18 @@ public:
 	//获得随机位置
 	void GetRandomPos(vector<POS> & snaBody)
 	{
-		m_FoodPos.x = rand() % (g_window_width - 30) + 1;//here
-		//m_FoodPos.x = rand() % (g_window_width - 50) + 1;
-		m_FoodPos.y = rand() % (g_window_height - 2) + 1;
+		m_FoodPos.x = rand() % (MAP_X - 30) + 1;//here
+		//m_FoodPos.x = rand() % (MAP_X - 50) + 1;
+		m_FoodPos.y = rand() % (MAP_Y - 2) + 1;
 		
 		for (int i = 0; i < snaBody.size(); i++)		//遍历蛇身
 		{
 			//食物不可出现在蛇身，若出现则重新生成
 			if (snaBody[i].x == m_FoodPos.x && snaBody[i].y == m_FoodPos.y)
 			{
-				m_FoodPos.x = rand() % (g_window_width - 30) + 1;//here
-				//m_FoodPos.x = rand() % (g_window_width - 50) + 1;
-				m_FoodPos.y = rand() % (g_window_height - 2) + 1;
+				m_FoodPos.x = rand() % (MAP_X - 30) + 1;//here
+				//m_FoodPos.x = rand() % (MAP_X - 50) + 1;
+				m_FoodPos.y = rand() % (MAP_Y - 2) + 1;
 			}
 		}
 	}
@@ -70,9 +70,9 @@ public:
 	Snake() :m_Dir(1), m_IsAlive(true)
 	{
 		POS snakeHead;
-		//snakeHead.x = g_window_width / 2 - 15;
-		snakeHead.x = g_window_width / 2 - 15 - 10;
-		snakeHead.y = g_window_height / 2;
+		//snakeHead.x = MAP_X / 2 - 15;
+		snakeHead.x = MAP_X / 2 - 15 - 10;
+		snakeHead.y = MAP_Y / 2;
 
 		m_SnakeBody.push_back(snakeHead);
 		snakeHead.y++;
@@ -184,9 +184,9 @@ public:
 	{
 		//是否撞墙
 		if (m_SnakeBody[HEAD].x <= 0 ||
-			m_SnakeBody[HEAD].x >= g_window_width - 29 ||
+			m_SnakeBody[HEAD].x >= MAP_X_WALL - 1 ||
 			m_SnakeBody[HEAD].y <= 0 ||
-			m_SnakeBody[HEAD].y >= g_window_height - 1)
+			m_SnakeBody[HEAD].y >= MAP_Y - 1)
 		{
 			m_IsAlive = false;
 			return m_IsAlive;
@@ -246,14 +246,31 @@ int main()
 	//各对象实例化
 	Snake snake;
 	CFood food(snake.m_SnakeBody);
+	bool isRunning = 0;
 
 	GameInit();				//初始化
 	DrawWelcome();			//欢迎界面
-	system("pause");		//提示按键到下一界面
+
+	char ch = _getch();
+	switch (ch)
+	{
+	case '1':
+		isRunning = 1;
+		break;
+	case '2':
+		gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 3);
+		cout << "Bye！" << endl;
+		//cin.get();
+		return 0;
+	default:
+		break;
+	}
+
+	//system("pause");		//提示按键到下一界面
 	DrawMap();				//打印地图边框
 	DrawGameInfo();			//打印相关信息
 
-	while (true)
+	while (true && isRunning)
 	{
 		DrawScore(snake.GetSnakeSize());	//打印分数
 		food.DrawFood();					//打印食物
