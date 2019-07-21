@@ -1,92 +1,94 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include <stdlib.h>
-#include <string>
 #include <vector>
-#include <ctime>
+#include <time.h>
 #include <conio.h>
 #include <Windows.h>
 #include "data.h"
 #include "func.h"
+#include "food.h"
+#include "snake.h"
 using namespace std;
 
-//Ê³ÎïÀà
+//é£Ÿç‰©ç±»
 class CFood
-{	
+{
 public:
-	POS m_FoodPos;		//Ê³Îï×ø±ê
+	POS m_FoodPos;		//é£Ÿç‰©åæ ‡
 
-	//¹¹Ôìº¯Êı£¬´«Èë²ÎÊıÎªÉßÉí×ø±ê
-	CFood(vector<POS>& coord)
+	//æ„é€ å‡½æ•°ï¼ˆå¼•ç”¨ä¼ å‚ï¼Œå¯æ”¹å®å‚
+	CFood(vector<POS> & snaBody)//ä¼ å…¥è›‡èº«ä»¥éªŒè¯é£Ÿç‰©æ˜¯å¦å‡ºç°åœ¨è›‡èº«
 	{
-		RandomXY(coord);
+		GetRandomPos(snaBody);
 	}
 
-	//»ñµÃËæ»úÎ»ÖÃ
-	void RandomXY(vector<POS>& coord)
+	//è·å¾—éšæœºä½ç½®
+	void GetRandomPos(vector<POS> & snaBody)
 	{
-		m_FoodPos.x = rand() % (g_window_width - 30) + 1;
+		m_FoodPos.x = rand() % (g_window_width - 30) + 1;//here
+		//m_FoodPos.x = rand() % (g_window_width - 50) + 1;
 		m_FoodPos.y = rand() % (g_window_height - 2) + 1;
-		unsigned int i;
-
-		//Ê³Îï²»¿ÉÔÚÉßÉíÉÏ£¬ÈôÓĞÒªÖØĞÂÉú³É
-		for (i = 0; i < coord.size(); i++)
+		
+		for (int i = 0; i < snaBody.size(); i++)		//éå†è›‡èº«
 		{
-			//ÖØĞÂÉú³É
-			if (coord[i].x == m_FoodPos.x && coord[i].y == m_FoodPos.y)
+			//é£Ÿç‰©ä¸å¯å‡ºç°åœ¨è›‡èº«ï¼Œè‹¥å‡ºç°åˆ™é‡æ–°ç”Ÿæˆ
+			if (snaBody[i].x == m_FoodPos.x && snaBody[i].y == m_FoodPos.y)
 			{
-				m_FoodPos.x = rand() % (g_window_width - 30) + 1;
+				m_FoodPos.x = rand() % (g_window_width - 30) + 1;//here
+				//m_FoodPos.x = rand() % (g_window_width - 50) + 1;
 				m_FoodPos.y = rand() % (g_window_height - 2) + 1;
-				i = 0;
 			}
 		}
 	}
 
-	//´òÓ¡Ê³Îï
+	//æ‰“å°é£Ÿç‰©
 	void DrawFood()
 	{
-		setColor(12, 0);
+		setColor(12, 0);	//é£Ÿç‰©çº¢è‰²
 		gotoxy(m_FoodPos.x, m_FoodPos.y);
-		cout << "@";
-		setColor(7, 0);
+		//gotoxy4s(m_FoodPos.x, m_FoodPos.y);//here
+		cout << "$";
+		setColor(7, 0);		//å†æ¢å›æ¥
 	}
 
-	//»ñÈ¡Ê³ÎïÎ»ÖÃ
+	//è·å–é£Ÿç‰©ä½ç½®
 	POS GetFoodPos()
 	{
 		return m_FoodPos;
 	}
 };
 
-//Ì°³ÔÉßÀà
+//è´ªåƒè›‡ç±»
 class Snake
 {
 public:
-	vector<POS> m_SnakeBody;	//´æ´¢ÉßÉíÌåµÄÏòÁ¿
-	int m_Dir;					//ÔË¶¯·½Ïò
-	bool m_IsAlive;				//ÊÇ·ñ´æ»î
+	vector<POS> m_SnakeBody;	//å­˜å‚¨è›‡èº«ä½“çš„å‘é‡
+	int m_Dir;					//è¿åŠ¨æ–¹å‘
+	bool m_IsAlive;				//æ˜¯å¦å­˜æ´»
 
-	//¹¹Ôìº¯Êı
+	//æ„é€ å‡½æ•°
 	Snake() :m_Dir(1), m_IsAlive(true)
 	{
 		POS snakeHead;
-		snakeHead.x = g_window_width / 2 - 15;
+		//snakeHead.x = g_window_width / 2 - 15;
+		snakeHead.x = g_window_width / 2 - 15 - 10;
 		snakeHead.y = g_window_height / 2;
 
 		m_SnakeBody.push_back(snakeHead);
 		snakeHead.y++;
 		m_SnakeBody.push_back(snakeHead);
 		snakeHead.y++;
-		m_SnakeBody.push_back(snakeHead); //³õÊ¼ÉßÉí³¤¶ÈÈı½Ú
+		m_SnakeBody.push_back(snakeHead); //åˆå§‹è›‡èº«é•¿åº¦ä¸‰èŠ‚
 	}
 
-	//¼àÌı¼üÅÌ
+	//ç›‘å¬é”®ç›˜
 	void ListenKeyBoard()
 	{
-		char ch;
+		char ch = 0;
 
-		if (_kbhit())					//kbhit ·Ç×èÈûº¯Êı 
+		if (_kbhit())				//kbhitéé˜»å¡å‡½æ•° 
 		{
-			ch = _getch();	//Ê¹ÓÃ getch º¯Êı»ñÈ¡¼üÅÌÊäÈë 
+			ch = _getch();			//ä½¿ç”¨ getch å‡½æ•°è·å–é”®ç›˜è¾“å…¥ 
 			switch (ch)
 			{
 			case 'w':
@@ -113,92 +115,84 @@ public:
 					break;
 				this->m_Dir = RIGHT;
 				break;
-			case '+':
-				if (g_speed >= 25)
-				{
-					g_speed -= 25;
-				}
-				break;
-			case '-':
-				if (g_speed < 250)
-				{
-					g_speed += 25;
-				}
+			//æš‚åœåŠæ¢å¤
+			//case ' ':
+
+			//é”®ç›˜æ§åˆ¶é€Ÿåº¦
+			//case '+':
+			//	if (g_speed >= 25)
+			//	{
+			//		g_speed -= 25;
+			//	}
+			//	break;
+			//case '-':
+			//	if (g_speed < 250)
+			//	{
+			//		g_speed += 25;
+			//	}
+			//	break;
+			default:
 				break;
 			}
 		}
 	}
 
-	//ÊÇ·ñ×²µ½×Ô¼º
-	bool IsMeetSelf(POS head)
-	{
-		for (unsigned int i = 1; i < m_SnakeBody.size(); i++)
-		{
-			if (head.x == m_SnakeBody[i].x && head.y == m_SnakeBody[i].y)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	//ÒÆ¶¯Ì°³ÔÉß
+	//ç§»åŠ¨è´ªåƒè›‡
 	void MoveSnake()
 	{
-		ListenKeyBoard();//¼àÌı¼üÅÌ
-		POS head = m_SnakeBody[0];//ÉßÍ·
-		switch (this->m_Dir)
+		ListenKeyBoard();//ç›‘å¬é”®ç›˜
+		POS snaHead = m_SnakeBody[0];//è›‡å¤´
+		switch (m_Dir)
 		{
 		case UP:
-			head.y--;
+			snaHead.y--;
 			break;
 		case DOWN:
-			head.y++;
+			snaHead.y++;
 			break;
 		case LEFT:
-			head.x--;
+			snaHead.x--;
 			break;
 		case RIGHT:
-			head.x++;
+			snaHead.x++;
 			break;
 		}
-		//²åÈëÒÆ¶¯ºóĞÂµÄÉßÍ·
-		m_SnakeBody.insert(m_SnakeBody.begin(), head);
+		//æ’å…¥ç§»åŠ¨åæ–°çš„è›‡å¤´ï¼ˆå…ˆå»è›‡å°¾ï¼Œå†åŠ è›‡å¤´ï¼‰
+		m_SnakeBody.insert(m_SnakeBody.begin(), snaHead);
 	}
 
-	//ÊÇ·ñ³Ôµ½Ê³Îï
-	bool IsEatenFood(CFood& f)
+	//æ˜¯å¦åƒåˆ°é£Ÿç‰©
+	bool IsEatenFood(CFood& food)
 	{
-		//»ñÈ¡Ê³Îï×ø±ê
-		POS food_coordinate = f.GetFoodPos();
-		//³Ôµ½Ê³Îï£¬Ê³ÎïÖØĞÂÉú³É£¬²»É¾³ıÉßÎ²
-		if (m_SnakeBody[HEAD].x == food_coordinate.x && m_SnakeBody[HEAD].y == food_coordinate.y)
+		POS foodPos = food.GetFoodPos();	//é£Ÿç‰©åæ ‡
+		//åæ ‡é‡åˆå³åƒåˆ°é£Ÿç‰©ï¼ˆåƒåˆ°ååˆ™é‡æ–°ç”Ÿæˆé£Ÿç‰©ï¼Œä¸åˆ é™¤è›‡å°¾
+		if (m_SnakeBody[HEAD].x == foodPos.x && m_SnakeBody[HEAD].y == foodPos.y)
 		{
-			f.RandomXY(m_SnakeBody);
+			food.GetRandomPos(m_SnakeBody);
 			return true;
 		}
 		else
 		{
-			//Ã»ÓĞ³Ôµ½Ê³Îï£¬É¾³ıÉßÎ²
+			//æ²¡æœ‰åƒåˆ°é£Ÿç‰©ï¼Œåˆ é™¤è›‡å°¾
 			m_SnakeBody.erase(m_SnakeBody.end() - 1);
 			return false;
 		}
 	}
 
-	//ÅĞ¶ÏÉúËÀ
+	//åˆ¤æ–­ç”Ÿæ­»
 	bool IsAlive()
 	{
+		//æ˜¯å¦æ’å¢™
 		if (m_SnakeBody[HEAD].x <= 0 ||
 			m_SnakeBody[HEAD].x >= g_window_width - 29 ||
 			m_SnakeBody[HEAD].y <= 0 ||
 			m_SnakeBody[HEAD].y >= g_window_height - 1)
 		{
-			//³¬³ö±ß½ç
 			m_IsAlive = false;
 			return m_IsAlive;
 		}
-		//ºÍ×Ô¼ºÅöµ½Ò»Æğ
-		for (unsigned int i = 1; i < m_SnakeBody.size(); i++)
+		//æ˜¯å¦æ’è‡ªå·±ï¼ˆåªç®¡å¤´å’Œèº«
+		for (int i = 1; i < m_SnakeBody.size(); i++)
 		{
 			if (m_SnakeBody[i].x == m_SnakeBody[HEAD].x && m_SnakeBody[i].y == m_SnakeBody[HEAD].y)
 			{
@@ -206,69 +200,77 @@ public:
 				return m_IsAlive;
 			}
 		}
-		m_IsAlive = true;
-
+		//m_IsAlive = true;
 		return m_IsAlive;
 	}
 
-	//»­Éß
+	//ç”»è›‡
 	void DrawSanke()
 	{
-		//ÉèÖÃÑÕÉ«ÎªÇ³ÂÌÉ«
-		setColor(10, 0);
-		for (unsigned int i = 0; i < this->m_SnakeBody.size(); i++)
+		setColor(10, 0);	//è®¾ç½®è›‡ä¸ºç»¿è‰²
+
+		for (int i = 0; i < m_SnakeBody.size(); i++)
 		{
-			gotoxy(m_SnakeBody[i].x, m_SnakeBody[i].y);
+			//â–¡â– 
+			gotoxy(m_SnakeBody[i].x, m_SnakeBody[i].y);//here
+			//gotoxy4s(m_SnakeBody[i].x, m_SnakeBody[i].y);
+			//cout << "â– ";
 			cout << "*";
 		}
-		//»Ö¸´Ô­À´µÄÑÕÉ«
-		setColor(7, 0);
+
+		setColor(7, 0);		//æ¢å¤åŸæ¥é¢œè‰²
 	}
 
-	//Çå³ıÉßÎ²£¬»­ÉßÇ°±Ø×ö
+	//æ¸…é™¤è›‡å°¾
 	void ClearSnake()
 	{
-		gotoxy(m_SnakeBody[this->m_SnakeBody.size() - 1].x, m_SnakeBody[this->m_SnakeBody.size() - 1].y);
+		//ç”»è›‡å‰å¿…åšï¼Œæœ€åä¸€èŠ‚è›‡èº«ç”¨ç©ºæ ¼è¡¨ç¤º
+		gotoxy(m_SnakeBody[m_SnakeBody.size() - 1].x, m_SnakeBody[m_SnakeBody.size() - 1].y);
+		//gotoxy4s(m_SnakeBody[m_SnakeBody.size() - 1].x, m_SnakeBody[m_SnakeBody.size() - 1].y);here
+
+
+		//cout << "  ";here
 		cout << " ";
 	}
 
-	//»ñÈ¡Éß³¤
+	//è·å–è›‡é•¿
 	int GetSnakeSize()
 	{
+		//è›‡é•¿ä½œä¸ºåˆ†æ•°å‚è€ƒï¼Œè¦å®æ—¶æ˜¾ç¤ºï¼Œæ•…æ”¾è‡³å¾ªç¯å†…
 		return m_SnakeBody.size();
 	}
 };
 
 int main()
 {
-	//¸÷¶ÔÏóÊµÀı»¯
-	Snake  snake;
+	//å„å¯¹è±¡å®ä¾‹åŒ–
+	Snake snake;
 	CFood food(snake.m_SnakeBody);
-	
-	GameInit();				//³õÊ¼»¯
-	DrawWelcome();			//»¶Ó­½çÃæ
-	system("pause");		//¹ı¶Éµ½ÓÎÏ·½çÃæ
-	DrawMap();				//´òÓ¡µØÍ¼±ß¿ò
-	DrawGameInfo();			//´òÓ¡Ïà¹ØĞÅÏ¢
-	
+
+	GameInit();				//åˆå§‹åŒ–
+	DrawWelcome();			//æ¬¢è¿ç•Œé¢
+	system("pause");		//æç¤ºæŒ‰é”®åˆ°ä¸‹ä¸€ç•Œé¢
+	DrawMap();				//æ‰“å°åœ°å›¾è¾¹æ¡†
+	DrawGameInfo();			//æ‰“å°ç›¸å…³ä¿¡æ¯
+
 	while (true)
 	{
-		DrawScore(snake.GetSnakeSize());	//´òÓ¡·ÖÊı
-		food.DrawFood();					//´òÓ¡Ê³Îï
-		snake.ClearSnake();					//ÇåÀíÉßÎ²
-		snake.IsEatenFood(food);			//ÊÇ·ñ³Ôµ½Ê³Îï
-		snake.MoveSnake();					//ÈÃÉßÅÜÆğÀ´
-		snake.DrawSanke();					//»­Éß
+		DrawScore(snake.GetSnakeSize());	//æ‰“å°åˆ†æ•°
+		food.DrawFood();					//æ‰“å°é£Ÿç‰©
+		snake.ClearSnake();					//æ¸…ç†è›‡å°¾
+		snake.IsEatenFood(food);			//æ˜¯å¦åƒåˆ°é£Ÿç‰©
+		snake.MoveSnake();					//è®©è›‡è·‘èµ·æ¥
+		snake.DrawSanke();					//ç”»è›‡
 
-		if (!snake.IsAlive())				//ÊÇ·ñ»î×Å
+		if (!snake.IsAlive())				//æ˜¯å¦æ´»ç€
 		{
 			GameOver(snake.GetSnakeSize());
 			break;
 		}
-		Sleep(g_speed);						//¿ØÖÆÓÎÏ·ËÙ¶È
+		Sleep(g_speed);						//æ§åˆ¶æ¸¸æˆé€Ÿåº¦
 	}
 
-	//ÏûºÄ¶àÓà×Ö·û£¬±ÜÃâ´òÓ¡ÏµÍ³ÌáÊ¾
+	//æ¶ˆè€—å¤šä½™å­—ç¬¦ï¼Œé¿å…æ‰“å°ç³»ç»Ÿæç¤º
 	cin.get();
 	cin.get();
 

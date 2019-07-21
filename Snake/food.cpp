@@ -1,33 +1,31 @@
 //#include <iostream>
 //#include <time.h>
 //#include <vector>
-//#include "setting.h"
+//#include "data.h"
 //#include "food.h"
 //#include "snake.h"
+//#include "func.h"
 //using namespace std;
 //
-//
-////构造函数，传入参数为蛇身坐标
-//CFood::CFood(vector<POS>& coord)
+////构造函数
+//CFood::CFood(vector<POS>& snaBody)//传入蛇身以验证食物是否出现在蛇身
 //{
-//	CFood::RandomXY(coord);
+//	CFood::GetRandomPos(snaBody);
 //}
 //
 ////获得随机位置
-//void CFood::RandomXY(vector<POS>& coord)
+//void CFood::GetRandomPos(vector<POS>& snaBody)
 //{
-//	m_FoodPos.x = rand() % (CSetting::window_width - 30) + 1;
-//	m_FoodPos.y = rand() % (CSetting::window_height - 2) + 1;
-//	unsigned int i;
-//	//原则上不允许食物出现在蛇的位置上，如果有，重新生成
-//	for (i = 0; i < coord.size(); i++)
+//	m_FoodPos.x = rand() % (g_window_width - 30) + 1;
+//	m_FoodPos.y = rand() % (g_window_height - 2) + 1;
+//
+//	for (int i = 0; i < snaBody.size(); i++)		//遍历蛇身
 //	{
-//		//食物出现在蛇身的位置上。重新生成
-//		if(coord[i].x == m_FoodPos.x && coord[i].y == m_FoodPos.y)
+//		//食物不可出现在蛇身，若出现则重新生成
+//		if (snaBody[i].x == m_FoodPos.x && snaBody[i].y == m_FoodPos.y)
 //		{
-//			m_FoodPos.x = rand() % (CSetting::window_width - 30) + 1;
-//			m_FoodPos.y = rand() % (CSetting::window_height - 2) + 1;
-//			i = 0;
+//			m_FoodPos.x = rand() % (g_window_width - 30) + 1;
+//			m_FoodPos.y = rand() % (g_window_height - 2) + 1;
 //		}
 //	}
 //}
@@ -35,10 +33,10 @@
 ////打印食物
 //void CFood::DrawFood()
 //{
-//	setColor(12, 0);
+//	setColor(12, 0);	//食物红色
 //	gotoxy(m_FoodPos.x, m_FoodPos.y);
-//	cout << "@";
-//	setColor(7, 0);
+//	cout << "$";
+//	setColor(7, 0);		//再换回来
 //}
 //
 ////获取食物位置

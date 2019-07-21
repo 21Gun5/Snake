@@ -3,55 +3,58 @@
 #include <time.h>
 #include "data.h"
 #include "func.h"
+#include <conio.h>
+
 using namespace std;
 
-//欢迎界面
+//打印欢迎界面
 void DrawWelcome()
 {
-	cout << "Welcome!";
+	cout << "Welcome!" << endl;
 }
 
 //打印地图边界
 void DrawMap()
 {
-	system("cls");
-	int i, j;
-	for (i = 0; i < g_window_width; i++)
+	system("cls");//先清屏
+	//上边界
+	for (int i = 0; i < g_window_width; i++)
 		cout << "#";
 	cout << endl;
-	for (i = 0; i < g_window_height - 2; i++)
+	//其他边界here
+	for (int i = 0; i < g_window_height - 2; i++)
 	{
-		for (j = 0; j < g_window_width; j++)
+		for (int j = 0; j < g_window_width; j++)
 		{
 			if (i == 13 && j >= g_window_width - 29)
 			{
 				cout << "#";
 				continue;
 			}
-
 			if (j == 0 || j == g_window_width - 29 || j == g_window_width - 1)
 			{
 				cout << "#";
 			}
 			else
 				cout << " ";
-
 		}
 		cout << endl;
 	}
-	for (i = 0; i < g_window_width; i++)
+	//下边界
+	for (int i = 0; i < g_window_width; i++)
 		cout << "#";
-
 }
 
 //游戏结束
 void GameOver(int score)
 {
 	setColor(12, 0);
+
 	gotoxy(g_window_width / 2 - 20, g_window_height / 2 - 5);
-	cout << "GAME OVER! " << endl;;
+	cout << "GAME OVER! " << endl;
+
 	gotoxy(g_window_width / 2 - 20, g_window_height / 2 - 3);
-	cout << "Scores: " << score << endl;
+	cout << "Scores: " << score - 3 << endl;
 }
 
 //打印分数
@@ -61,10 +64,8 @@ void DrawScore(int score)
 	cout << "  ";
 	gotoxy(g_window_width - 22 + 14, 4);
 	cout << "  ";
-
 	gotoxy(g_window_width - 22, 6);
-	cout << "当前分数: " << score << endl;
-
+	cout << "当前分数: " << score - 3 << endl;//-3，原始蛇长为3
 }
 
 //打印操作说明
@@ -78,29 +79,40 @@ void DrawGameInfo()
 	cout << "A: 左    D: 右" << endl;
 }
 
+//初始化工作
 void GameInit()
 {
-	//设置游戏窗口大小here
-	char buffer[32];
-	sprintf_s(buffer, "mode con cols=%d lines=%d", g_window_width, g_window_height);
-	system(buffer);
-	//system("mode con cols = 80 lines = 40");
+	//设置窗口大小here
+	char buf[32];
+	sprintf_s(buf, "mode con cols=%d lines=%d", g_window_width, g_window_height);
+	system(buf);
 
-	//隐藏光标here
+	//隐藏光标
 	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_CURSOR_INFO CursorInfo;
-	GetConsoleCursorInfo(handle, &CursorInfo);//获取控制台光标信息
-	CursorInfo.bVisible = false; //隐藏控制台光标
-	SetConsoleCursorInfo(handle, &CursorInfo);//设置控制台光标状态
+	GetConsoleCursorInfo(handle, &CursorInfo);	//获取控制台光标信息
+	CursorInfo.bVisible = false;				//隐藏控制台光标
+	SetConsoleCursorInfo(handle, &CursorInfo);	//设置控制台光标状态
 
 	//初始化随机数种子
 	srand((unsigned int)time(0));
 }
 
-//移动光标到指定位置
+//移动光标
+void gotoxy4s(int x, int y)
+{
+	COORD cur;//系统提供的坐标结构体
+	cur.X = x*2;//here上下与左右速度不匹配
+	//cur.X = x;
+	cur.Y = y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cur);
+}
+
+//移动光标
 void gotoxy(int x, int y)
 {
 	COORD cur;//系统提供的坐标结构体
+	//cur.X = x*2;//here上下与左右速度不匹配
 	cur.X = x;
 	cur.Y = y;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cur);
@@ -112,3 +124,134 @@ void setColor(unsigned short ForeColor, unsigned short BackGroundColor)
 	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);//获取当前窗口句柄
 	SetConsoleTextAttribute(handle, ForeColor + BackGroundColor * 0x10);//设置颜色
 }
+
+////////////////////////////////////////////////
+
+//1. 在屏幕任何位置输出字符串
+void WriteChar(int x, int y, const char* p, int color = 0)
+{
+	HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);//获取标准输出句柄（在这是屏幕
+	COORD pos = { x, y };//坐标结构体
+	SetConsoleCursorPosition(hOutput, pos);//将光标移动到 屏幕上指定坐标位置
+	printf(p);//在指定位置打印
+}
+
+// 2. 受控制的自由移动的点
+void moveSth()
+{
+	//光标不可见
+	HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);//获取屏幕句柄（句柄就理解为指向某对象的指针，此句柄就代表某对象）
+	CONSOLE_CURSOR_INFO cci;//控制台光标对象
+	cci.dwSize = sizeof(cci);//光标大小？？干嘛用？
+	cci.bVisible = FALSE;//设置光标状态为不可见
+	SetConsoleCursorInfo(hOutput, &cci);//将光标状态应用到屏幕上
+
+	int x = 10;
+	int y = 20;
+	int nDir = 0;
+	char ch = 0;
+	while (true)
+	{
+		int Oldx = x;
+		int Oldy = y;
+		WriteChar(x, y, "☆");//指定位置打印星星
+		if (_kbhit() == 1)//非阻塞函数，不同于scanf，会一直阻塞等待用户输入
+		{
+			ch = _getch();//无回显的获取字符
+		}
+		else
+		{
+			ch = 0;
+		}
+		switch (ch)//通过按键来控制方向，再通过方向来控制位置变化（不同于上面，直接通过按键来控制位置
+		{
+		case 'w':
+			nDir = 0;
+			break;
+		case 's':
+			nDir = 1;
+			break;
+		case 'a':
+			nDir = 2;
+			break;
+		case 'd':
+			nDir = 3;
+			break;
+		default:
+			break;
+		}
+
+		switch (nDir)//再通过方向来控制位置变化（方向是中间人角色）
+		{
+		case 0:
+			y--;
+			break;
+		case 1:
+			y++;
+			break;
+		case 2:
+			x--;
+			break;
+		case 3:
+			x++;
+			break;
+		default:
+			break;
+		}
+		Sleep(100);//控制速度
+		//旧位置打印空，新位置打印字符，实现移动的效果
+		//尽量避免system("cls")清屏这种方式，会使屏幕闪
+		WriteChar(Oldx, Oldy, " ");//老位置
+		WriteChar(x, y, "☆");
+	}
+}
+
+// 3. 鼠标画图（没效果？
+void DrawMouse()
+{
+	HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);//获取屏幕句柄
+	INPUT_RECORD ir = {};//输入记录
+	DWORD dwCount = 0;//信息数量
+	while (true)
+	{
+		//从屏幕上获取信息，并将信息传到其他对象上（屏幕是输入，其他对象是输出，类似管道）
+		ReadConsoleInput(
+			hInput,  //输出句柄，固定写法，在这是屏幕，即从屏幕上获取信息 （传入参数
+			&ir,     //用于获取在控制台上的信息，从屏幕上获取了啥   （传出参数
+			1,       //ir的个数，一共有多少输入的东西，为1，即只有鼠标这一个（自己理解的）（传入参数
+			&dwCount //读取了多少个信息  （传出参数
+		);
+		if (ir.EventType == MOUSE_EVENT)//如果屏幕上发生了鼠标按键事件
+		{
+			if (ir.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)//如果是左键
+			{
+				COORD pos = ir.Event.MouseEvent.dwMousePosition;//获取按键的位置
+				//因为上下是一个字符，左右是半个字符，故x坐标要/2，使得上下与左右的速度一致（为何是x/2？）
+				WriteChar(pos.X / 2, pos.Y, "☆");//在按键的位置画图；
+
+			}
+			if (ir.Event.MouseEvent.dwButtonState == RIGHTMOST_BUTTON_PRESSED)//如果是右键
+			{
+				COORD pos = ir.Event.MouseEvent.dwMousePosition;
+				WriteChar(pos.X / 2, pos.Y, " ");//在按键的位置清空（打印空字符
+			}
+
+		}
+	}
+
+}
+
+// 4. 移动蛇
+// 5. 吃食物，变长
+
+//int main()
+//{
+//	//WriteChar(10, 20, "hello");
+//	//moveSth();
+//	//DrawMouse();
+//	
+//	return 0;
+//}
+
+
+

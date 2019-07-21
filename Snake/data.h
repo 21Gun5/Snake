@@ -5,7 +5,7 @@
 #define DOWN 2
 #define LEFT 3
 #define RIGHT 4
-#define HEAD 0
+#define HEAD 0//蛇身数组0位置便是蛇头
 
 //全局变量
 extern int dir[4][2];

@@ -8,3 +8,5 @@ void DrawGameInfo();			//打印操作说明
 void GameInit();				//初始化游戏
 void gotoxy(int x, int y);		//移动光标
 void setColor(unsigned short ForeColor, unsigned short BackGroundColor);//设置颜色
+
+void gotoxy4s(int x, int y);
