@@ -11,3 +11,5 @@ int g_speed = 200;		//结合sleep使用，越大越慢
 //int g_window_height = 40;
 int g_MAP[MAP_X][MAP_Y];
 bool g_isRunning = false;
+int g_SnaCount;
+int g_BarCount;

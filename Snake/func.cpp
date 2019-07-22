@@ -259,34 +259,101 @@ void SetLevel()
 //存档
 void SaveGame(CSnake& snake, CBarrier& barrier, CFood& food)
 {
-	//C++方式
-	ofstream out("conf\\game.i", ios::out | ios::binary);
-	out.write((char*)& snake, sizeof(CSnake));//这个地址一定要转换成char*
-	out.write((char*)& barrier, sizeof(CBarrier));
-	out.write((char*)& food, sizeof(CFood));
-	out.close();
+	////C++方式
+	//ofstream out("conf\\game.i", ios::out | ios::binary);
+	////写入蛇
+	//for (int i = 0; i < snake.m_SnakeBody.size(); i++)
+	//{
+	//	out.write((char*)&snake.m_SnakeBody[i], sizeof(COORD));
+	//}
+	//out.write((char*)& snake.m_Dir, sizeof(int));
+	//out.write((char*)& snake.m_IsAlive, sizeof(bool));
+	////写入障碍物
+	//for (int i = 0; i < barrier.m_size; i++)
+	//{
+	//	out.write((char*)& barrier.m_BarrArr[i], sizeof(COORD));
+	//}
+	//out.write((char*)& barrier.m_size, sizeof(int));
+	////写入食物
+	//out.write((char*)& food.m_FoodPos, sizeof(COORD));
+	//out.close();
 
-	////打开文件
-	//FILE* pFile = NULL;
-	//errno_t err = fopen_s(&pFile, "conf\\game2.i", "wb");
-	////写入文件
-	//fwrite(&snake, sizeof(CSnake), 1, pFile);				
-	//fwrite(&barrier, sizeof(CBarrier), 1, pFile);				
-	//fwrite(&food, sizeof(CFood), 1, pFile);
-	////关闭文件
-	//fclose(pFile);
+	g_SnaCount = snake.m_SnakeBody.size();//为2
+	g_BarCount = barrier.m_size;//15
+	//打开文件
+	FILE* pFile = NULL;
+	errno_t err = fopen_s(&pFile, "conf\\game2.i", "wb");
+	//写入障碍物
+	for (int i = 0; i < barrier.m_size; i++)
+	{
+		fwrite(&barrier.m_BarrArr[i], sizeof(COORD), 1, pFile);
+	}
+	fwrite(&barrier.m_size, sizeof(int), 1, pFile);
+	//写入蛇
+	for (int i = 0; i < snake.m_SnakeBody.size(); i++)
+	{
+		fwrite(&snake.m_SnakeBody[i], sizeof(COORD), 1, pFile);
+	}
+	fwrite(&snake.m_Dir, sizeof(int), 1, pFile);
+	fwrite(&snake.m_IsAlive, sizeof(bool), 1, pFile);
+	//写入食物
+	fwrite(&food.m_FoodPos, sizeof(COORD), 1, pFile);
+	//关闭文件
+	fclose(pFile);
 
 }
 
 //读档
 void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food)
 {
-	//C++方式
-	ifstream in("conf\\game.i", ios::in | ios::binary);
-	in.read((char*)&snake, sizeof(CSnake));
-	in.read((char*)& barrier, sizeof(CBarrier));
-	in.read((char*)& food, sizeof(CFood));
-	in.close();
+	////C++方式
+	//ifstream in("conf\\game.i", ios::in | ios::binary);
+	//COORD tmp;
+	////读取蛇
+	//for (int i = 0; i < 3; i++)
+	//{
+	//	in.read((char*)& tmp, sizeof(COORD));
+	//	snake.m_SnakeBody.push_back(tmp);
+	//}
+	//in.read((char*)& snake.m_Dir, sizeof(int));
+	//in.read((char*)& snake.m_IsAlive, sizeof(bool));
+	////读取障碍物
+	//for (int i = 0; i < 15; i++)
+	//{
+	//	in.read((char*)& tmp, sizeof(COORD));
+	//	barrier.m_BarrArr.push_back(tmp);
+	//}
+	//in.read((char*)& barrier.m_size, sizeof(int));
+	////读取食物
+	//in.read((char*)& food.m_FoodPos, sizeof(COORD));
+	//in.close();
+
+	//打开文件
+	FILE* pFile = NULL;
+	errno_t err = fopen_s(&pFile, "conf\\game2.i", "rb");
+	//读取障碍物
+	COORD tmp;
+	for (int i = 0; i <15; i++)
+	{
+		fread(&tmp, sizeof(COORD), 1, pFile);
+		barrier.m_BarrArr.push_back(tmp);
+	}
+
+	fread(&barrier.m_size, sizeof(int), 1, pFile);
+	//读取蛇
+	COORD tmp2;
+	for (int i = 0; i < 2; i++)
+	{
+		fread(&tmp2, sizeof(COORD), 1, pFile);
+		snake.m_SnakeBody.push_back(tmp2);
+	}
+	fwrite(&snake.m_Dir, sizeof(int), 1, pFile);//在这报错
+	fwrite(&snake.m_IsAlive, sizeof(bool), 1, pFile);//错
+	//读取食物
+	fread(&food.m_FoodPos, sizeof(COORD), 1, pFile);
+	//关闭文件
+	fclose(pFile);
+
 
 	////打开文件
 	//FILE* pFile = NULL;

@@ -1,4 +1,1 @@
-﻿  func.cpp
-C:\Users\ry1yn\source\repos\15PB\Snake\func.cpp(317,16): warning C4838:  从“int”转换到“SHORT”需要收缩转换
-C:\Users\ry1yn\source\repos\15PB\Snake\func.cpp(317,19): warning C4838:  从“int”转换到“SHORT”需要收缩转换
-  Snake.vcxproj -> C:\Users\ry1yn\source\repos\15PB\Debug\Snake.exe
+﻿  Snake.vcxproj -> C:\Users\ry1yn\source\repos\15PB\Debug\Snake.exe

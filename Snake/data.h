@@ -21,6 +21,8 @@ extern int g_barrQuantity;//障碍物数量
 extern int g_level;//游戏等级
 extern int g_snaLen;//蛇的长度
 extern bool g_isRunning;//游戏是否运行
+extern int g_SnaCount;
+extern int g_BarCount;
 
 //extern bool g_isRunning;//是否暂停
 //extern int g_window_width;	//窗口宽度

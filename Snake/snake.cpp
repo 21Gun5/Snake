@@ -124,22 +124,20 @@ void CSnake::ListenKeyBoard(CSnake& snake, CBarrier& barrier, CFood& food)
 
 		}
 
-		//case ' ':
-		//	g_isRunning = true;
-		//	break;
+
 		//¼üÅÌ¿ØÖÆËÙ¶È
-		//case '+':
-		//	if (g_speed >= 25)
-		//	{
-		//		g_speed -= 25;
-		//	}
-		//	break;
-		//case '-':
-		//	if (g_speed < 250)
-		//	{
-		//		g_speed += 25;
-		//	}
-		//	break;
+		case '+':
+			if (g_speed >= 25)
+			{
+				g_speed -= 25;
+			}
+			break;
+		case '-':
+			if (g_speed < 250)
+			{
+				g_speed += 25;
+			}
+			break;
 
 		default:
 			break;
