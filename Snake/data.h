@@ -12,7 +12,7 @@
 #define MAP_X_WALL 60
 #define 空地 0
 #define 食物 1
-#define 障碍 2
+#define 边界 2
 #define 蛇 3
 
 //全局变量

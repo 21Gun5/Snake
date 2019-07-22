@@ -58,7 +58,7 @@ void DrawMap()
 	{
 		for (int y = 0; y < MAP_Y; y++)
 		{
-			if (g_MAP[x][y]== 障碍)
+			if (g_MAP[x][y]== 边界)
 			{
 				gotoxy(x, y);
 				cout << "※";//占2B
@@ -89,7 +89,7 @@ void GameOver(int score)
 }
 
 //打印分数
-void DrawScore(int score)
+void DrawGameInfo(int score,int barrSize)
 {
 	gotoxy(MAP_X - 22 + 14, 6);
 	cout << "  ";
@@ -97,10 +97,15 @@ void DrawScore(int score)
 	cout << "  ";
 	gotoxy(MAP_X - 22, 6);
 	cout << "当前分数: " << score - 3 << endl;//-3，原始蛇长为3
+	gotoxy(MAP_X - 22, 8);
+	cout << "障碍物个数: " << barrSize << endl;//
+	gotoxy(MAP_X - 22, 10);
+	cout << "当前速度: " << "Not Set" << endl;//
+
 }
 
 //打印操作说明
-void DrawGameInfo()
+void DrawGameHelp()
 {
 	gotoxy(MAP_X-22+2, 18);
 	cout << "操作说明：" << endl;
@@ -127,10 +132,13 @@ void GameInit()
 	{
 		for (int y = 0; y < MAP_Y; y++)
 		{
+			//地图边界
 			if (x == 0 || x == MAP_X-2  || y == 0 || y == MAP_Y - 1 || x== MAP_X_WALL || (x>MAP_X_WALL && y== MAP_Y/2))//x == MAP_X-2还是xy轴的老问题
 			{
-				g_MAP[x][y] = 障碍;
+				g_MAP[x][y] = 边界;
 			}
+			//地图中的障碍物
+			//else if()
 			else
 			{
 				g_MAP[x][y] = 空地;
@@ -149,10 +157,15 @@ void GameInit()
 	srand((unsigned int)time(0));
 
 	//播放BGM
+	//while (true)//循环播放
+	//{
+	//	PlaySoundA("conf\\BGM.wav", NULL, SND_ASYNC | SND_NODEFAULT);
+	//}
 	PlaySoundA("conf\\BGM.wav", NULL, SND_ASYNC | SND_NODEFAULT);
+		
 }
 
-//移动光标
+//移动光标（打印食物、蛇、障碍物
 void gotoxy4s(int x, int y)
 {
 	COORD cur;//系统提供的坐标结构体
@@ -162,7 +175,7 @@ void gotoxy4s(int x, int y)
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cur);
 }
 
-//移动光标
+//移动光标（打印地图、分数、提示信息等其他用）
 void gotoxy(int x, int y)
 {
 	COORD cur;//系统提供的坐标结构体

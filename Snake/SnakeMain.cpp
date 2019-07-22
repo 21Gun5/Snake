@@ -18,13 +18,13 @@ public:
 	POS m_FoodPos;		//食物坐标
 
 	//构造函数（引用传参，可改实参
-	CFood(vector<POS> & snaBody)//传入蛇身以验证食物是否出现在蛇身
+	CFood(vector<POS> & snaBody, vector<POS>& barrArr)//传入蛇身以验证食物是否出现在蛇身
 	{
-		GetRandomPos(snaBody);
+		GetRandomPos(snaBody,barrArr);
 	}
 
 	//获得随机位置
-	void GetRandomPos(vector<POS> & snaBody)
+	void GetRandomPos(vector<POS> & snaBody, vector<POS>& barrArr)
 	{
 		m_FoodPos.x = rand() % (MAP_X_WALL/2 - 2) + 1;//因为x是y一半，故/2
 		//m_FoodPos.x = rand() % (MAP_X - 50) + 1;here
@@ -40,6 +40,18 @@ public:
 				m_FoodPos.y = rand() % (MAP_Y - 2) + 1;
 			}
 		}
+
+		for (int i = 0; i < barrArr.size(); i++)		//遍历地图内所有障碍物
+		{
+			//食物不可出现在障碍物，若出现则重新生成
+			if (barrArr[i].x == m_FoodPos.x && barrArr[i].y == m_FoodPos.y)
+			{
+				m_FoodPos.x = rand() % (MAP_X_WALL / 2 - 2) + 1;//因为x是y一半，故/2
+				//m_FoodPos.x = rand() % (MAP_X - 50) + 1;here
+				m_FoodPos.y = rand() % (MAP_Y - 2) + 1;
+			}
+		}
+
 	}
 
 	//打印食物
@@ -180,7 +192,7 @@ public:
 	}
 
 	//是否吃到食物
-	bool IsEatenFood(CFood& food)
+	bool IsEatenFood(CFood& food, vector<POS>& barArr)
 	{
 		POS foodPos = food.GetFoodPos();	//食物坐标
 		//坐标重合即吃到食物（吃到后则重新生成食物，不删除蛇尾
@@ -188,7 +200,7 @@ public:
 		{
 			//PlaySoundA("conf\\eat.wav", NULL, SND_ASYNC | SND_NODEFAULT);
 
-			food.GetRandomPos(m_SnakeBody);
+			food.GetRandomPos(m_SnakeBody,barArr);
 			return true;
 		}
 		else
@@ -200,9 +212,9 @@ public:
 	}
 
 	//判断生死
-	bool IsAlive()
+	bool IsAlive(vector<POS>& barArr)
 	{
-		//是否撞墙
+		//是否撞地图边界
 		if (m_SnakeBody[HEAD].x <= 0 ||
 			m_SnakeBody[HEAD].x >= MAP_X_WALL/2 - 1 ||//因为x是y一半，故/2，好多这样的问题，x都要是y的一半
 			m_SnakeBody[HEAD].y <= 0 ||
@@ -213,10 +225,21 @@ public:
 			m_IsAlive = false;
 			return m_IsAlive;
 		}
-		//是否撞自己（只管头和身
+		//是否撞自己（头和身相撞，蛇身重叠不算）
 		for (int i = 1; i < m_SnakeBody.size(); i++)
 		{
+			//PlaySoundA("conf\\duang.wav", NULL, SND_ASYNC | SND_NODEFAULT);
 			if (m_SnakeBody[i].x == m_SnakeBody[HEAD].x && m_SnakeBody[i].y == m_SnakeBody[HEAD].y)
+			{
+				m_IsAlive = false;
+				return m_IsAlive;
+			}
+		}
+		//是否撞地图内障碍物
+		for (int i = 0; i <barArr.size(); i++)
+		{
+			//PlaySoundA("conf\\duang.wav", NULL, SND_ASYNC | SND_NODEFAULT);
+			if (barArr[i].x == m_SnakeBody[HEAD].x && barArr[i].y == m_SnakeBody[HEAD].y)
 			{
 				m_IsAlive = false;
 				return m_IsAlive;
@@ -263,12 +286,54 @@ public:
 	}
 };
 
+//障碍物类
+class CBarrier
+{
+public:
+	vector<POS> m_BarrArr;//障碍物数组
+	int m_size;//总个数，越多难度越大,在用的时候，与m_BarArr.size()是一致的，就是通过此个数来创建的动态数组
+	CBarrier(int size = 20):m_size(size)
+	{
+		POS barr;
+		for (int i = 0; i < m_size; i++)
+		{
+			barr.x = rand() % (MAP_X_WALL / 2 - 2);
+			barr.y = rand() % (MAP_Y - 2) + 1;
+			m_BarrArr.push_back(barr);
+		}
+	}
+	void DrawBarr()
+	{
+		for (int i = 0; i < m_size; i++)
+		{
+			gotoxy4s(m_BarrArr[i].x, m_BarrArr[i].y);
+			cout << "※";
+		}
+	}
+	int GetBarrSize()
+	{
+		return m_size;
+	}
+
+};
 
 int main()
 {
+	/*
+	蛇如何移动？
+	1. 初始化：3节蛇（包括头
+	2. 清除蛇尾：将蛇尾打印空（暂时清空而已
+	3. 是否吃到：吃到不变，未吃到，彻底删除蛇尾
+	4. 让蛇跑：新加蛇头（尾巴去掉，中间不变，新加蛇头；尾替代头，中间不变，而非后者替代前者，牵涉所有蛇体
+	5. 画蛇
+	*/
+
 	//各对象实例化
+	
 	CSnake snake;
-	CFood food(snake.m_SnakeBody);
+	CBarrier barrier(15);//默认为20个，也可自定义
+	CFood food(snake.m_SnakeBody, barrier.m_BarrArr);
+	
 	bool isRunning = 0;
 	//bool isRunning = 1;//恒为1，测试用
 
@@ -295,18 +360,19 @@ int main()
 
 	//system("pause");		//提示按键到下一界面
 	DrawMap();				//打印地图边框
-	DrawGameInfo();			//打印相关信息
+	DrawGameHelp();			//打印相关信息
 
 	while (true && isRunning)
 	{
-		DrawScore(snake.GetSnakeSize());	//打印分数
+		DrawGameInfo(snake.GetSnakeSize(),barrier.GetBarrSize());	//打印分数等信息
 		food.DrawFood();					//打印食物
+		barrier.DrawBarr();//打印障碍物
 		snake.ClearSnake();					//清理蛇尾
-		snake.IsEatenFood(food);			//是否吃到食物
+		snake.IsEatenFood(food, barrier.m_BarrArr);			//是否吃到食物
 		snake.MoveSnake();					//让蛇跑起来
 		snake.DrawSanke();					//画蛇
 
-		if (!snake.IsAlive())				//是否活着
+		if (!snake.IsAlive(barrier.m_BarrArr))				//是否活着
 		{
 			GameOver(snake.GetSnakeSize());
 			break;
