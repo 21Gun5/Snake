@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="barrier.cpp" />
     <ClCompile Include="func.cpp" />
     <ClCompile Include="food.cpp" />
     <ClCompile Include="data.cpp" />
@@ -26,6 +27,7 @@
     <ClCompile Include="SnakeMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="barrier.h" />
     <ClInclude Include="func.h" />
     <ClInclude Include="food.h" />
     <ClInclude Include="data.h" />

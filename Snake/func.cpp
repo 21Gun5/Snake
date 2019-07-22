@@ -88,7 +88,7 @@ void GameOver(int score)
 	return;
 }
 
-//打印分数
+//打印相关信息
 void DrawGameInfo(int score,int barrSize)
 {
 	gotoxy(MAP_X - 22 + 14, 6);
@@ -98,13 +98,13 @@ void DrawGameInfo(int score,int barrSize)
 	gotoxy(MAP_X - 22, 6);
 	cout << "当前分数: " << score - 3 << endl;//-3，原始蛇长为3
 	gotoxy(MAP_X - 22, 8);
-	cout << "障碍物个数: " << barrSize << endl;//
+	cout << "障碍个数: " << barrSize << endl;//
 	gotoxy(MAP_X - 22, 10);
 	cout << "当前速度: " << "Not Set" << endl;//
 
 }
 
-//打印操作说明
+//打印游戏帮助
 void DrawGameHelp()
 {
 	gotoxy(MAP_X-22+2, 18);
@@ -192,7 +192,6 @@ void setColor(unsigned short ForeColor, unsigned short BackGroundColor)
 	SetConsoleTextAttribute(handle, ForeColor + BackGroundColor * 0x10);//设置颜色
 }
 
-//播放声音
 
 //void PlaySnd(string sound)
 //{
@@ -202,7 +201,7 @@ void setColor(unsigned short ForeColor, unsigned short BackGroundColor)
 //	PlaySoundA("conf\\BGM.wav", NULL, SND_ASYNC | SND_NODEFAULT);
 //}
 
-////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
 
 //1. 在屏幕任何位置输出字符串
 void WriteChar(int x, int y, const char* p, int color = 0)

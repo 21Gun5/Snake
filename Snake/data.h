@@ -25,8 +25,8 @@ extern int g_speed;			//结合sleep使用，越大越慢
 extern int g_MAP[MAP_X][MAP_Y];
 
 //坐标结构体（自定义的，系统提供的是COORD
-typedef struct _POS
-{
-	int x;
-	int y;
-}POS,PPOS;
+//typedef struct _POS
+//{
+//	int x;
+//	int y;
+//}POS,PPOS;

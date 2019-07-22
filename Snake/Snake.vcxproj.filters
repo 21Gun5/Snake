@@ -30,6 +30,9 @@
     <ClCompile Include="data.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="barrier.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="food.h">
@@ -42,6 +45,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="data.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="barrier.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

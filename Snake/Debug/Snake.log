@@ -1,7 +1,10 @@
 ﻿  SnakeMain.cpp
-C:\Users\ry1yn\source\repos\15PB\Snake\SnakeMain.cpp(33,21): warning C4018:  “<”: 有符号/无符号不匹配
-C:\Users\ry1yn\source\repos\15PB\Snake\SnakeMain.cpp(44,21): warning C4018:  “<”: 有符号/无符号不匹配
-C:\Users\ry1yn\source\repos\15PB\Snake\SnakeMain.cpp(229,21): warning C4018:  “<”: 有符号/无符号不匹配
-C:\Users\ry1yn\source\repos\15PB\Snake\SnakeMain.cpp(239,21): warning C4018:  “<”: 有符号/无符号不匹配
-C:\Users\ry1yn\source\repos\15PB\Snake\SnakeMain.cpp(257,21): warning C4018:  “<”: 有符号/无符号不匹配
+  food.cpp
+C:\Users\ry1yn\source\repos\15PB\Snake\food.cpp(24,20): warning C4018:  “<”: 有符号/无符号不匹配
+  snake.cpp
+C:\Users\ry1yn\source\repos\15PB\Snake\food.cpp(35,20): warning C4018:  “<”: 有符号/无符号不匹配
+C:\Users\ry1yn\source\repos\15PB\Snake\snake.cpp(159,20): warning C4018:  “<”: 有符号/无符号不匹配
+C:\Users\ry1yn\source\repos\15PB\Snake\snake.cpp(169,20): warning C4018:  “<”: 有符号/无符号不匹配
+  正在生成代码...
+C:\Users\ry1yn\source\repos\15PB\Snake\snake.cpp(187,20): warning C4018:  “<”: 有符号/无符号不匹配
   Snake.vcxproj -> C:\Users\ry1yn\source\repos\15PB\Debug\Snake.exe
