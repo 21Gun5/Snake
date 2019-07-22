@@ -5,21 +5,67 @@
 #include "data.h"
 #include "func.h"
 #include <conio.h>
-
 using namespace std;
 
 //打印欢迎界面
 void DrawWelcome()
 {
-	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 5);
-	cout << "游戏导引" << endl;
-	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 3);
-	cout << "1. 开始游戏" << endl;
-	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 1);
-	cout << "2. 退出游戏" << endl;
-	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 1);
-	cout << "请输入您的选择-> ";
+ //      
+	gotoxy(MAP_X / 2 - 25, MAP_Y / 2 -15);
+	cout << " .M\"\"\"dgd       db      `7MN.   `7MF'`7MMF' `YMM' `7MM\"\"\"YMM " << endl;
+	gotoxy(MAP_X / 2 - 25, MAP_Y / 2 - 14);
+	cout << ",MI    \"Y      ;MM:       MMN.    M    MM   .M'     MM    `7 " << endl;
+	gotoxy(MAP_X / 2 - 25, MAP_Y / 2 - 13);
+	cout << "`MMb.         ,V^MM.      M YMb   M    MM .d\"       MM   d   " << endl;
+	gotoxy(MAP_X / 2 - 25, MAP_Y / 2 - 12);
+	cout << "  `YMMNq.    ,M  `MM      M  `MN. M    MMMMM.       MMmmMM   " << endl;
+	gotoxy(MAP_X / 2 - 25, MAP_Y / 2 - 11);
+	cout << ".     `MM    AbmmmqMA     M   `MM.M    MM  VMA      MM   Y  ," << endl;
+	gotoxy(MAP_X / 2 - 25, MAP_Y / 2 - 10);
+	cout << "Mb     dM   A'     VML    M     YMM    MM   `MM.    MM     ,M" << endl;
+	gotoxy(MAP_X / 2 - 25, MAP_Y / 2 - 9);
+	cout << "P\"Ybmmd\"  .AMA.   .AMMA..JML.    YM  .JMML.   MMb..JMMmmmmMMM" << endl;
 
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 6);
+	cout << "1. 新游戏" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 4);
+	cout << "2. 读取游戏" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 -2);
+	cout << "3. 退出游戏" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 -0);
+	cout << "请输入选择-> ";
+}
+
+//处理用户输入
+int HandleSelect()
+{
+	char ch = getchar();//需要回车来确定，且输入可见
+	//char ch = _getch();//不需回车来确定，且无回显
+
+	int res = 0;
+
+	switch (ch)
+	{
+	case '1'://新游戏
+		g_isRunning = true;
+		res = 1;
+		break;
+	case '2'://读档
+		cout << "no" << endl;
+		res = 2;
+		break;
+	case '3'://退出游戏
+		gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 3);
+		cout << "Bye！" << endl; 
+		res = 0;
+		//cin.get();
+		break;
+	default:
+		gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 3);
+		cout << "输入错误";
+		break;
+	}
+	return res;
 }
 
 //打印地图边界
@@ -192,6 +238,24 @@ void setColor(unsigned short ForeColor, unsigned short BackGroundColor)
 	SetConsoleTextAttribute(handle, ForeColor + BackGroundColor * 0x10);//设置颜色
 }
 
+//设置游戏难度等级
+void SetLevel()
+{
+
+}
+
+//存档
+void SaveGame()
+{
+	cout << "hahaha";
+}
+
+//读档
+void LoadGame()
+{
+	cout << "xixixi";
+
+}
 
 //void PlaySnd(string sound)
 //{

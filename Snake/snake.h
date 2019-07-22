@@ -10,6 +10,7 @@ public:
 	bool m_IsAlive;				//是否存活
 
 	CSnake();//构造函数
+	CSnake(int dir);
 	void ListenKeyBoard();//监听键盘
 	void MoveSnake();//移动贪吃蛇
 	bool IsEatenFood(CFood& food, vector<COORD>& barArr);//是否吃到食物

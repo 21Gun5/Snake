@@ -8,9 +8,11 @@
 #include "func.h"
 using namespace std;
 
-//贪吃蛇类
-//构造函数
-CSnake::CSnake() :m_Dir(1), m_IsAlive(true)
+//无参构造，读取文件时，对象接收者为空
+CSnake::CSnake(){}
+
+//有参构造
+CSnake::CSnake(int dir) :m_Dir(dir), m_IsAlive(true)
 {
 	COORD snakeHead;
 	//snakeHead.X = MAP_X / 2 - 15;
@@ -66,12 +68,39 @@ void CSnake::ListenKeyBoard()
 			setColor(12, 0);
 			gotoxy(MAP_X_WALL + 2, 1);
 			cout << "PAUSE" << endl;//暂停的状态标识
+			gotoxy(MAP_X_WALL + 2, 2);
+			cout << "1. 回到游戏" << endl;
+			gotoxy(MAP_X_WALL + 2, 3);
+			cout << "2. 保存游戏" << endl;
+			gotoxy(MAP_X_WALL + 2, 4);
+			cout << "3. 退出游戏" << endl;
 
 			char tmp = _getch();	//利用阻塞函数暂停游戏
 
-			gotoxy(MAP_X_WALL + 2, 1);
-			cout << "     " << endl;//恢复游戏时，将提示清空
-			break;
+			switch (tmp)
+			{
+			case '1'://恢复游戏
+				gotoxy(MAP_X_WALL + 2, 1);
+				cout << "     " << endl;//恢复游戏时，将提示清空
+				gotoxy(MAP_X_WALL + 2, 2);
+				cout << "           " << endl;
+				gotoxy(MAP_X_WALL + 2, 3);
+				cout << "           " << endl;
+				gotoxy(MAP_X_WALL + 2, 4);
+				cout << "           " << endl;
+				break;
+			case '2'://存档
+				SaveGame();
+				break;
+			case '3'://退出游戏
+				GameOver(this->m_SnakeBody.size()+1);//分数那是-3的，而蛇跑时会有删除尾巴，+3-1应该为+2，为何+1正确？
+				g_isRunning = false;
+				break;
+			default:
+				break;
+			}
+
+
 		}
 
 		//case ' ':
@@ -126,6 +155,7 @@ bool CSnake::IsEatenFood(CFood& food, vector<COORD>& barArr)
 {
 	COORD foodPos = food.GetFoodPos();	//食物坐标
 	//坐标重合即吃到食物（吃到后则重新生成食物，不删除蛇尾
+
 	if (m_SnakeBody[HEAD].X == foodPos.X && m_SnakeBody[HEAD].Y == foodPos.Y)
 	{
 		//PlaySoundA("conf\\eat.wav", NULL, SND_ASYNC | SND_NODEFAULT);
@@ -189,7 +219,17 @@ void CSnake::DrawSanke()
 		//□■
 		//gotoxy(m_SnakeBody[i].X, m_SnakeBody[i].Y);//here
 		gotoxy4s(m_SnakeBody[i].X, m_SnakeBody[i].Y);
-		cout << "■";
+
+		//蛇头与蛇身设置不同图案
+		if (i == 0)
+		{
+			cout << "◎";
+		}
+		else
+		{
+			cout << "■";
+		}
+		
 		//cout << "*";//here
 	}
 

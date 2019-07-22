@@ -8,6 +8,9 @@
 #include "func.h"
 using namespace std;
 
+//无参构造，读取文件时，对象接收者为空
+CFood::CFood(){}
+
 //构造函数（引用传参，可改实参
 CFood::CFood(vector<COORD>& snaBody, vector<COORD>& barrArr)//传入蛇身以验证食物是否出现在蛇身
 {
@@ -51,7 +54,7 @@ void CFood::DrawFood()
 	setColor(12, 0);	//食物红色
 	//gotoxy(m_FoodPos.X, m_FoodPos.Y);
 	gotoxy4s(m_FoodPos.X, m_FoodPos.Y);//here
-	cout << "□";
+	cout << "■";
 	setColor(7, 0);		//再换回来
 }
 
