@@ -1,20 +1,2 @@
 ﻿  SnakeMain.cpp
-C:\Users\ry1yn\source\repos\15PB\Snake\SnakeMain.cpp(65,16): error C2065:  “snake”: 未声明的标识符
-C:\Users\ry1yn\source\repos\15PB\Snake\SnakeMain.cpp(65,38): error C2065:  “barrier”: 未声明的标识符
-C:\Users\ry1yn\source\repos\15PB\Snake\SnakeMain.cpp(65,59): error C2660:  “DrawGameInfo”: 函数不接受 1 个参数
-C:\Users\ry1yn\source\repos\15PB\Snake\func.h(7,6): message :  参见“DrawGameInfo”的声明
-C:\Users\ry1yn\source\repos\15PB\Snake\SnakeMain.cpp(66,3): error C2065:  “food”: 未声明的标识符
-C:\Users\ry1yn\source\repos\15PB\Snake\SnakeMain.cpp(67,3): error C2065:  “barrier”: 未声明的标识符
-C:\Users\ry1yn\source\repos\15PB\Snake\SnakeMain.cpp(70,3): error C2065:  “snake”: 未声明的标识符
-C:\Users\ry1yn\source\repos\15PB\Snake\SnakeMain.cpp(71,3): error C2065:  “snake”: 未声明的标识符
-C:\Users\ry1yn\source\repos\15PB\Snake\SnakeMain.cpp(71,21): error C2065:  “food”: 未声明的标识符
-C:\Users\ry1yn\source\repos\15PB\Snake\SnakeMain.cpp(71,27): error C2065:  “barrier”: 未声明的标识符
-C:\Users\ry1yn\source\repos\15PB\Snake\SnakeMain.cpp(72,3): error C2065:  “snake”: 未声明的标识符
-C:\Users\ry1yn\source\repos\15PB\Snake\SnakeMain.cpp(73,3): error C2065:  “snake”: 未声明的标识符
-C:\Users\ry1yn\source\repos\15PB\Snake\SnakeMain.cpp(76,8): error C2065:  “snake”: 未声明的标识符
-C:\Users\ry1yn\source\repos\15PB\Snake\SnakeMain.cpp(76,22): error C2065:  “barrier”: 未声明的标识符
-  func.cpp
-C:\Users\ry1yn\source\repos\15PB\Snake\SnakeMain.cpp(78,13): error C2065:  “snake”: 未声明的标识符
-C:\Users\ry1yn\source\repos\15PB\Snake\func.cpp(274,16): warning C4838:  从“int”转换到“SHORT”需要收缩转换
-  正在生成代码...
-C:\Users\ry1yn\source\repos\15PB\Snake\func.cpp(274,19): warning C4838:  从“int”转换到“SHORT”需要收缩转换
+  Snake.vcxproj -> C:\Users\ry1yn\source\repos\15PB\Debug\Snake.exe
