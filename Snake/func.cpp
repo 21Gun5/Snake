@@ -1,10 +1,15 @@
 #include <iostream>
+#include <fstream>
 #include <windows.h>
 #include <string>
 #include <time.h>
+#include <conio.h>
 #include "data.h"
 #include "func.h"
-#include <conio.h>
+#include "food.h"
+#include "snake.h"
+#include "barrier.h"
+
 using namespace std;
 
 //打印欢迎界面
@@ -51,7 +56,7 @@ int HandleSelect()
 		res = 1;
 		break;
 	case '2'://读档
-		cout << "no" << endl;
+		g_isRunning = true;
 		res = 2;
 		break;
 	case '3'://退出游戏
@@ -207,6 +212,7 @@ void GameInit()
 	//{
 	//	PlaySoundA("conf\\BGM.wav", NULL, SND_ASYNC | SND_NODEFAULT);
 	//}
+
 	PlaySoundA("conf\\BGM.wav", NULL, SND_ASYNC | SND_NODEFAULT);
 		
 }
@@ -244,16 +250,53 @@ void SetLevel()
 
 }
 
+////游戏主循环
+//void PlayGame(CSnake & snake,CBarrier & barrier, CFood & food)
+//{
+//
+//}
+
 //存档
-void SaveGame()
+void SaveGame(CSnake& snake, CBarrier& barrier, CFood& food)
 {
-	cout << "hahaha";
+	//C++方式
+	ofstream out("conf\\game.i", ios::out | ios::binary);
+	out.write((char*)& snake, sizeof(CSnake));//这个地址一定要转换成char*
+	out.write((char*)& barrier, sizeof(CBarrier));
+	out.write((char*)& food, sizeof(CFood));
+	out.close();
+
+	////打开文件
+	//FILE* pFile = NULL;
+	//errno_t err = fopen_s(&pFile, "conf\\game2.i", "wb");
+	////写入文件
+	//fwrite(&snake, sizeof(CSnake), 1, pFile);				
+	//fwrite(&barrier, sizeof(CBarrier), 1, pFile);				
+	//fwrite(&food, sizeof(CFood), 1, pFile);
+	////关闭文件
+	//fclose(pFile);
+
 }
 
 //读档
-void LoadGame()
+void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food)
 {
-	cout << "xixixi";
+	//C++方式
+	ifstream in("conf\\game.i", ios::in | ios::binary);
+	in.read((char*)&snake, sizeof(CSnake));
+	in.read((char*)& barrier, sizeof(CBarrier));
+	in.read((char*)& food, sizeof(CFood));
+	in.close();
+
+	////打开文件
+	//FILE* pFile = NULL;
+	//errno_t err = fopen_s(&pFile, "conf\\game2.i", "rb");
+	////读取文件
+	//fread(&snake, sizeof(CSnake), 1, pFile);
+	//fread(&barrier, sizeof(CBarrier), 1, pFile);
+	//fread(&food, sizeof(CFood), 1, pFile);
+	////关闭文件
+	//fclose(pFile);
 
 }
 

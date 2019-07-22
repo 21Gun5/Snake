@@ -1,4 +1,7 @@
 #pragma once
+#include "food.h"
+#include "snake.h"
+#include "barrier.h"
 #pragma comment(lib,"winmm.lib")//播放BGM
 
 void DrawWelcome();				//欢迎界面
@@ -16,7 +19,9 @@ void SetLevel();//设置游戏难度等级
 
 int HandleSelect();//处理用户输入
 
-void SaveGame();//存档
+void SaveGame(CSnake& snake, CBarrier& barrier, CFood& food);//存档
 
-void LoadGame();//读档
+void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food);//读档
+
+//void PlayGame(CSnake& snake, CBarrier& barrier, CFood& food);
 

@@ -22,9 +22,10 @@ using namespace std;
 
 int main()
 {
-	CSnake* psnake=NULL;//初始化是个好习惯，高老师如是说道
-	CBarrier* pbarrier=NULL;
-	CFood* pfood=NULL;
+	//0. 定义各对象指针，后续在if中赋值，突破局部变量的局限
+	CSnake* psnake = NULL;//初始化是个好习惯，高老师如是说道
+	CBarrier* pbarrier = NULL;
+	CFood* pfood = NULL;
 
 	// 1. 初始化及欢迎界面
 	GameInit();
@@ -32,7 +33,6 @@ int main()
 
 	// 2. 用户想干嘛？
 	int op = HandleSelect();
-	
 	//2.1 若开启新游戏，则各对象有参实例化
 	if (op == 1)
 	{
@@ -46,17 +46,13 @@ int main()
 		psnake = new CSnake;
 		pbarrier = new CBarrier;
 		pfood = new CFood;
-		LoadGame();
+		LoadGame(*psnake, *pbarrier, *pfood);
 	}
 	// 2.3 退出游戏
 	else if (op == 0)
 	{
 		return 0;
 	}
-
-	//CSnake snake(UP);//方向为UP
-	//CBarrier barrier(snake.m_SnakeBody, 15);//默认为20个，也可自定义
-	//CFood food(snake.m_SnakeBody, barrier.m_BarrArr);
 
 	// 3. 打印地图及帮助
 	DrawMap();
@@ -73,7 +69,7 @@ int main()
 		// 4.2 让蛇移动并将其打印
 		psnake->ClearSnake();					//清理蛇尾
 		psnake->IsEatenFood(*pfood, pbarrier->m_BarrArr);			//是否吃到食物
-		psnake->MoveSnake();					//让蛇跑起来
+		psnake->MoveSnake(*psnake,*pbarrier,*pfood);					//让蛇跑起来
 		psnake->DrawSanke();					//画蛇
 
 		// 4.3 判断是否存活

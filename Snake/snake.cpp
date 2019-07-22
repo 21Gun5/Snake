@@ -27,7 +27,7 @@ CSnake::CSnake(int dir) :m_Dir(dir), m_IsAlive(true)
 }
 
 //监听键盘
-void CSnake::ListenKeyBoard()
+void CSnake::ListenKeyBoard(CSnake& snake, CBarrier& barrier, CFood& food)
 {
 	char ch = 0;
 
@@ -90,9 +90,30 @@ void CSnake::ListenKeyBoard()
 				cout << "           " << endl;
 				break;
 			case '2'://存档
-				SaveGame();
+				
+				//恢复游戏时，将提示清空
+				gotoxy(MAP_X_WALL + 2, 1);
+				cout << "     " << endl;
+				gotoxy(MAP_X_WALL + 2, 2);
+				cout << "           " << endl;
+				gotoxy(MAP_X_WALL + 2, 3);
+				cout << "           " << endl;
+				gotoxy(MAP_X_WALL + 2, 4);
+				cout << "           " << endl;
+
+				SaveGame(snake, barrier, food);
 				break;
 			case '3'://退出游戏
+				//恢复游戏时，将提示清空
+				gotoxy(MAP_X_WALL + 2, 1);
+				cout << "     " << endl;//恢复游戏时，将提示清空
+				gotoxy(MAP_X_WALL + 2, 2);
+				cout << "           " << endl;
+				gotoxy(MAP_X_WALL + 2, 3);
+				cout << "           " << endl;
+				gotoxy(MAP_X_WALL + 2, 4);
+				cout << "           " << endl;
+
 				GameOver(this->m_SnakeBody.size()+1);//分数那是-3的，而蛇跑时会有删除尾巴，+3-1应该为+2，为何+1正确？
 				g_isRunning = false;
 				break;
@@ -127,9 +148,9 @@ void CSnake::ListenKeyBoard()
 }
 
 //移动贪吃蛇
-void CSnake::MoveSnake()
+void CSnake::MoveSnake(CSnake& snake, CBarrier& barrier, CFood& food)
 {
-	ListenKeyBoard();//监听键盘
+	ListenKeyBoard(snake,barrier,food);//监听键盘
 	COORD snaHead = m_SnakeBody[0];//蛇头
 	switch (m_Dir)
 	{

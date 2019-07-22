@@ -1,5 +1,6 @@
 #pragma once
 #include "food.h"
+#include "barrier.h"
 
 //贪吃蛇类
 class CSnake
@@ -11,8 +12,8 @@ public:
 
 	CSnake();//构造函数
 	CSnake(int dir);
-	void ListenKeyBoard();//监听键盘
-	void MoveSnake();//移动贪吃蛇
+	void ListenKeyBoard(CSnake& snake, CBarrier& barrier, CFood& food);//监听键盘
+	void MoveSnake(CSnake& snake, CBarrier& barrier, CFood& food);//移动贪吃蛇
 	bool IsEatenFood(CFood& food, vector<COORD>& barArr);//是否吃到食物
 	bool IsAlive(vector<COORD>& barArr);//判断生死
 	void DrawSanke();//画蛇
