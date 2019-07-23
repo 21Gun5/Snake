@@ -29,6 +29,7 @@ extern int g_BarCount;
 //extern int g_window_height;	//窗口高度
 
 extern int g_MAP[MAP_X][MAP_Y];
+extern int g_BarrMAP[MAP_X_WALL][MAP_Y];
 
 //坐标结构体（自定义的，系统提供的是COORD
 //typedef struct _POS

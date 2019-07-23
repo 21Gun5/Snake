@@ -27,7 +27,9 @@ void SaveGame(CSnake& snake, CBarrier& barrier, CFood& food);//存档
 
 void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food);//读档
 
-void CustomizeMap();//玩家自定义地图
+void SaveMap();//玩家自定义地图
+
+void LoadMap(CBarrier& barrier);
 
 void DrawMouse();
 void WriteChar();

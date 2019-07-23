@@ -43,41 +43,6 @@ void DrawWelcome()
 	cout << "请输入选择-> ";
 }
 
-//处理用户输入
-int HandleSelect()
-{
-	char ch = getchar();//需要回车来确定，且输入可见
-	//char ch = _getch();//不需回车来确定，且无回显
-
-	int res = 0;
-
-	switch (ch)
-	{
-	case '1'://新游戏
-		g_isRunning = true;
-		res = 1;
-		break;
-	case '2'://读档
-		g_isRunning = true;
-		res = 2;
-		break;
-	case '3'://自定义地图
-		res = 3;
-		break;
-	case '4'://退出游戏
-		gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 3);
-		cout << "Bye！" << endl; 
-		res = 0;
-		//cin.get();
-		break;
-	default:
-		gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 3);
-		cout << "输入错误";
-		break;
-	}
-	return res;
-}
-
 //打印地图边界
 void DrawMap()
 {
@@ -203,11 +168,11 @@ void GameInit()
 	}
 
 	//隐藏光标
-	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_CURSOR_INFO CursorInfo;
-	GetConsoleCursorInfo(handle, &CursorInfo);	//获取控制台光标信息
-	CursorInfo.bVisible = false;				//隐藏控制台光标
-	SetConsoleCursorInfo(handle, &CursorInfo);	//设置控制台光标状态
+	//HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	//CONSOLE_CURSOR_INFO CursorInfo;
+	//GetConsoleCursorInfo(handle, &CursorInfo);	//获取控制台光标信息
+	//CursorInfo.bVisible = false;				//隐藏控制台光标
+	//SetConsoleCursorInfo(handle, &CursorInfo);	//设置控制台光标状态
 
 	//初始化随机数种子
 	srand((unsigned int)time(0));
@@ -371,9 +336,20 @@ void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food)
 }
 
 //自定义地图
-void CustomizeMap()
+void SaveMap()
 {
 	DrawMap();
+	//打印编辑地图的帮助信息
+	setColor(12, 0);
+	gotoxy(MAP_X - 20, 4);
+	cout << "编辑地图" << endl;
+	gotoxy(MAP_X - 24, 6);
+	cout << "左键单击：创建障碍" << endl;
+	gotoxy(MAP_X - 24, 8);
+	cout << "右键单击：消除障碍" << endl;
+	gotoxy(MAP_X - 24, 10);
+	cout << "界外双击：退出编辑" << endl;
+	setColor(7, 0);
 
 	HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
 	INPUT_RECORD ir = {};
@@ -381,7 +357,7 @@ void CustomizeMap()
 	SetConsoleMode(hInput, ENABLE_MOUSE_INPUT);
 
 	vector<COORD> BarrTmp;//障碍物数组
-	int barrTmpSize  =0;
+	int barrTmpSize  = 0;
 
 	while (true)
 	{
@@ -393,8 +369,10 @@ void CustomizeMap()
 				COORD pos = ir.Event.MouseEvent.dwMousePosition;//获取按键的位置
 				if (pos.X > 0 && pos.X < MAP_X_WALL && pos.Y >0 && pos.Y < MAP_Y)
 				{
-					BarrTmp.push_back(pos);//加入数组
-					barrTmpSize++;
+					//BarrTmp.push_back(pos);//加入数组
+					//barrTmpSize++;
+
+					g_BarrMAP[pos.X][pos.Y] = 1;
 					gotoxy4s(pos.X/2, pos.Y);//按理说，不再需要x/2，但pos是通过鼠标事件获得的，同一般生成的不同（内部细节不深究）
 					cout << "※";
 				}
@@ -404,40 +382,124 @@ void CustomizeMap()
 				COORD pos = ir.Event.MouseEvent.dwMousePosition;
 				if (pos.X > 0 && pos.X < MAP_X_WALL && pos.Y >0 && pos.Y < MAP_Y)
 				{
-					for (vector<COORD>::iterator it = BarrTmp.begin(); it!=  BarrTmp.end(); it++)
-					{
-						if (pos.X == it->X && pos.Y == it->Y)//若是数组里的，则删除
-						{
-							BarrTmp.erase(it);
-							barrTmpSize--;
-							gotoxy4s(pos.X/2, pos.Y);
-							cout << "  ";
-						}
-					}
+
+					//for (vector<COORD>::iterator it = BarrTmp.begin(); it!=  BarrTmp.end(); it++)
+					//{
+					//	if (pos.X == it->X && pos.Y == it->Y)//若是数组里的，则删除
+					//	{
+					//		BarrTmp.erase(it);
+					//		barrTmpSize--;
+					//		gotoxy4s(pos.X/2, pos.Y);
+					//		cout << "  ";
+					//	}
+					//}
+
+					g_BarrMAP[pos.X][pos.Y] = 0;
+					gotoxy4s(pos.X/2, pos.Y);
+					cout << "  ";
 					
 				}	
+			}
+			if (ir.Event.MouseEvent.dwEventFlags == DOUBLE_CLICK)
+			{
+				COORD pos = ir.Event.MouseEvent.dwMousePosition; 
+				if (!(pos.X > 0 && pos.X < MAP_X_WALL && pos.Y >0 && pos.Y < MAP_Y))
+				{
+					//地图外双击才退出，避免与左键单击创建障碍混淆
+					break;
+				}
 			}
 		}
 	}
 
-	////写入地图文件
-	//FILE* pFile = NULL;
-	//errno_t err = fopen_s(&pFile, "conf\\map.i", "wb");
-	//fwrite(&barrTmpSize, sizeof(int), 1, pFile);//写入障碍物数量
-	//for (int i = 0; i < BarrTmp.size(); i++)//写入障碍物
-	//{
-	//	fwrite(&BarrTmp[i], sizeof(COORD), 1, pFile);
-	//}
-	//fclose(pFile);
 
+	for (int i = 0; i < MAP_X_WALL; i++)
+	{
+		for (int j = 0; j < MAP_Y; j++)
+		{
+			if (g_BarrMAP[i][j] == 1)
+			{
+				COORD tmp = { i,j };
+				BarrTmp.push_back(tmp);
+				barrTmpSize++;
+			}
+		}
+	}
 
-
+	//写入地图文件
+	FILE* pFile = NULL;
+	errno_t err = fopen_s(&pFile, "conf\\map.i", "wb");
+	fwrite(&barrTmpSize, sizeof(int), 1, pFile);//写入障碍物数量
+	for (int i = 0; i < BarrTmp.size(); i++)//写入障碍物
+	{
+		fwrite(&BarrTmp[i], sizeof(COORD), 1, pFile);
+	}
+	fclose(pFile);
 }
 
+void LoadMap(CBarrier& barrier)
+{
+	//vector<COORD> BarrTmp;//障碍物数组
+	//int barrTmpSize = 0;
+	COORD tmp;
+
+	FILE* pFile = NULL;
+	errno_t err = fopen_s(&pFile, "conf\\map.i", "rb");
+	fread(&barrier.m_size, sizeof(int), 1, pFile);//写入障碍物数量
+	for (int i = 0; i < barrier.m_size; i++)//写入障碍物
+	{
+		fread(&tmp, sizeof(COORD), 1, pFile);
+		barrier.m_BarrArr.push_back(tmp);//一定要借用tmp变量，不可直接读入BarrTmp[i]
+	}
+	fclose(pFile);
+
+	//cout << barrTmpSize << endl;
+	//for (int i = 0; i < barrTmpSize; i++)
+	//{
+	//	cout << BarrTmp[i].X << BarrTmp[i].Y << endl;
+	//}
+}
+
+//处理用户输入
+int HandleSelect()
+{
+	//char ch = getchar();//需要回车来确定，且输入可见
+	char ch = _getch();//不需回车来确定，且无回显
+
+	int res = 0;
+
+	switch (ch)
+	{
+	case '1'://新游戏
+		g_isRunning = true;
+		res = 1;
+		break;
+	case '2'://读档
+		g_isRunning = true;
+		res = 2;
+		break;
+	case '3'://自定义地图
+		res = 3;
+		break;
+	case '4'://退出游戏
+		gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 3);
+		cout << "Bye！" << endl;
+		res = 0;
+		//cin.get();
+		break;
+	default:
+		gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 3);
+		cout << "输入错误";
+		break;
+	}
+	return res;
+}
+
+//处理用户输入（选择地图
 int HandleSelectMap()
 {
 	system("cls");
-
+	
 	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 6);
 	cout << "请选择地图：" << endl;
 	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 4);
@@ -445,27 +507,26 @@ int HandleSelectMap()
 	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 2);
 	cout << "2. 玩家提供" << endl;
 	gotoxy(MAP_X / 2 - 10, MAP_Y / 2);
-	cout << "3. 返回上页" << endl;
-	gotoxy(MAP_X / 2 - 10, MAP_Y / 2+2);
 	cout << "请输入选择-> ";
 
-	//char ch = getchar();//需要回车来确定，且输入可见
+	int rres = 0;
+	//char cch = getchar();//需要回车来确定，且输入可见
+	char cch = _getch();
+	
+	switch (cch)
+	{
+	case '1'://系统默认
+		break;
+	case '2'://玩家提供
+		rres = 1;
+		break;
+	default:
+		gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 3);
+		cout << "输入错误";
+		break;
+	}
 
-	//switch (ch)
-	//{
-	//case '1'://系统默认
-	//	break;
-	//case '2'://玩家提供
-	//	break;
-	//case '3'://返回上页
-	//	break;
-	//default:
-	//	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 3);
-	//	cout << "输入错误";
-	//	break;
-	//}
-
-	return 0;
+	return rres;
 
 }
 

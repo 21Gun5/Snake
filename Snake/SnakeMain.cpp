@@ -33,77 +33,85 @@ using namespace std;
 
 int main()
 {
-	////0. 定义各对象指针，后续在if中赋值，突破局部变量的局限
-	//CSnake* psnake = NULL;//初始化是个好习惯，高老师如是说道
-	//CBarrier* pbarrier = NULL;
-	//CFood* pfood = NULL;
+	//0. 定义各对象指针，后续在if中赋值，突破局部变量的局限
+	CSnake* psnake = NULL;//初始化是个好习惯，高老师如是说道
+	CBarrier* pbarrier = NULL;
+	CFood* pfood = NULL;
 
-	//// 1. 初始化及欢迎界面
+	// 1. 初始化及欢迎界面
 	GameInit();
 	DrawWelcome();
 
-	//// 2. 用户想干嘛？
+	// 2. 用户想干嘛？
 	int op = HandleSelect();
-	////2.1 若开启新游戏，则各对象有参实例化
+	//2.1 若开启新游戏，则各对象有参实例化
 	if (op == 1)
 	{
-	//	psnake = new CSnake(UP);//方向为UP
-	//	pbarrier = new CBarrier(psnake->m_SnakeBody, 15);//默认为20个，也可自定义
-	//	pfood = new CFood(psnake->m_SnakeBody, pbarrier->m_BarrArr);
-	//	HandleSelectMap();
+		psnake = new CSnake(UP);//方向为UP
+		int oop = HandleSelectMap();
+		if (oop == 1)//若是选择自定义的地图
+		{
+			pbarrier = new CBarrier;
+			LoadMap(*pbarrier);
+		}
+		else
+		{
+			pbarrier = new CBarrier(psnake->m_SnakeBody, 15);//默认为20个，也可自定义
+		}
+		pfood = new CFood(psnake->m_SnakeBody, pbarrier->m_BarrArr);
+		
 
 	}
-	////2.2 若读档，从文件读取，则各对象无参实例化，以接受数据
-	//else if (op == 2)
-	//{
-	//	psnake = new CSnake;
-	//	pbarrier = new CBarrier;
-	//	pfood = new CFood;
-	//	LoadGame(*psnake, *pbarrier, *pfood);
-	//}
+	//2.2 若读档，从文件读取，则各对象无参实例化，以接受数据
+	else if (op == 2)
+	{
+		psnake = new CSnake;
+		pbarrier = new CBarrier;
+		pfood = new CFood;
+		LoadGame(*psnake, *pbarrier, *pfood);
+	}
 	else if (op == 3)
 	{
-		
-		CustomizeMap();
+		SaveMap();
 		//DrawMouse();
 	}
-	//// 2.3 退出游戏
-	//else if (op == 0)
-	//{
-	//	return 0;
-	//}
+	// 2.3 退出游戏
+	else if (op == 0)
+	{
+		return 0;
+	}
 
-	//// 3. 打印地图及帮助
-	//DrawMap();
-	//DrawGameHelp();
+	// 3. 打印地图及帮助
+	DrawMap();
+	DrawGameHelp();
 
-	//// 4. 游戏主循环
-	//while (g_isRunning)
-	//{
-	//	// 4.1 打印游戏信息、食物、障碍物
-	//	DrawGameInfo(psnake->GetSnakeSize(), pbarrier->GetBarrSize());	//打印分数等信息
-	//	pfood->DrawFood();					//打印食物
-	//	pbarrier->DrawBarr();//打印障碍物
+	// 4. 游戏主循环
+	while (g_isRunning)
+	{
+		// 4.1 打印游戏信息、食物、障碍物
+		DrawGameInfo(psnake->GetSnakeSize(), pbarrier->GetBarrSize());	//打印分数等信息
+		pfood->DrawFood();					//打印食物
+		pbarrier->DrawBarr();//打印障碍物
 
-	//	// 4.2 让蛇移动并将其打印
-	//	psnake->ClearSnake();					//清理蛇尾
-	//	psnake->IsEatenFood(*pfood, pbarrier->m_BarrArr);			//是否吃到食物
-	//	psnake->MoveSnake(*psnake,*pbarrier,*pfood);					//让蛇跑起来
-	//	psnake->DrawSanke();					//画蛇
+		// 4.2 让蛇移动并将其打印
+		psnake->ClearSnake();					//清理蛇尾
+		psnake->IsEatenFood(*pfood, pbarrier->m_BarrArr);			//是否吃到食物
+		psnake->MoveSnake(*psnake,*pbarrier,*pfood);					//让蛇跑起来
+		psnake->DrawSanke();					//画蛇
 
-	//	// 4.3 判断是否存活
-	//	if (!psnake->IsAlive(pbarrier->m_BarrArr))				//是否活着
-	//	{
-	//		GameOver(psnake->GetSnakeSize());
-	//		break;
-	//	}
-	//	// 4.4 控制游戏速度
-	//	Sleep(g_speed);
-	//}
+		// 4.3 判断是否存活
+		if (!psnake->IsAlive(pbarrier->m_BarrArr))				//是否活着
+		{
+			GameOver(psnake->GetSnakeSize());
+			break;
+		}
+		// 4.4 控制游戏速度
+		Sleep(g_speed);
+	}
 
-	////5. 消耗多余字符，用户按键后才会显示系统信息
-	//cin.get();
-	//cin.get();
+	//5. 消耗多余字符，用户按键后才会显示系统信息
+	cin.get();
+	cin.get();
 
 	return 0;
 }
