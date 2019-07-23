@@ -112,6 +112,13 @@ void GameOver(int score)
 //打印相关信息
 void DrawGameInfo(int score,int barrSize)
 {
+	setColor(12, 0);
+	gotoxy(MAP_X_WALL + 2, 1);
+	cout << "RUNNING" << endl;//正在运行的状态标识
+	gotoxy(MAP_X_WALL + 2, 2);
+	cout << "q: 暂停游戏" << endl;
+	setColor(7, 0);
+
 	g_Speed = 5 + (300 - g_SleepTime) / 25;
 	gotoxy(MAP_X - 22 + 14, 6);
 	cout << "  ";
@@ -136,9 +143,9 @@ void DrawGameHelp()
 	gotoxy(MAP_X-22, 22);
 	cout << "A: 左    D: 右" << endl;
 	gotoxy(MAP_X - 22, 24);
-	cout << "Q: 暂停游戏" << endl;
-	gotoxy(MAP_X - 22, 26);
-	cout << "任意键: 恢复游戏" << endl;
+	cout << "+:加速  -:减速" << endl;
+	//gotoxy(MAP_X - 22, 26);
+	//cout << "任意键: 恢复游戏" << endl;
 }
 
 //初始化工作

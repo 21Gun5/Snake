@@ -1,1 +1,5 @@
-﻿  Snake.vcxproj -> C:\Users\ry1yn\source\repos\15PB\Debug\Snake.exe
+﻿  snake.cpp
+C:\Users\ry1yn\source\repos\15PB\Snake\snake.cpp(244,20): warning C4018:  “<”: 有符号/无符号不匹配
+C:\Users\ry1yn\source\repos\15PB\Snake\snake.cpp(254,20): warning C4018:  “<”: 有符号/无符号不匹配
+C:\Users\ry1yn\source\repos\15PB\Snake\snake.cpp(272,20): warning C4018:  “<”: 有符号/无符号不匹配
+  Snake.vcxproj -> C:\Users\ry1yn\source\repos\15PB\Debug\Snake.exe

@@ -76,6 +76,8 @@ void CSnake::ListenKeyBoard(CSnake& snake, CBarrier& barrier, CFood& food)
 
 			setColor(12, 0);
 			gotoxy(MAP_X_WALL + 2, 1);
+			cout << "       " << endl;//暂停的状态标识
+			gotoxy(MAP_X_WALL + 2, 1);
 			cout << "PAUSE" << endl;//暂停的状态标识
 			gotoxy(MAP_X_WALL + 2, 2);
 			cout << "1. 回到游戏" << endl;
@@ -84,15 +86,20 @@ void CSnake::ListenKeyBoard(CSnake& snake, CBarrier& barrier, CFood& food)
 			gotoxy(MAP_X_WALL + 2, 4);
 			cout << "3. 退出游戏" << endl;
 
-			char tmp = _getch();	//利用阻塞函数暂停游戏
+			char tmp;
+			do
+			{
+				tmp = _getch();	//利用阻塞函数暂停游戏
+			}
+			while (!(tmp == '1' || tmp == '2' || tmp == '3'));//只有123才可，否则一直处于暂停状态，直至123
 
 			switch (tmp)
 			{
 			case '1'://恢复游戏
 				gotoxy(MAP_X_WALL + 2, 1);
-				cout << "     " << endl;//恢复游戏时，将提示清空
+				cout << "RUNNING" << endl;//恢复游戏时，将提示清空
 				gotoxy(MAP_X_WALL + 2, 2);
-				cout << "           " << endl;
+				cout << "q: 暂停游戏" << endl;
 				gotoxy(MAP_X_WALL + 2, 3);
 				cout << "           " << endl;
 				gotoxy(MAP_X_WALL + 2, 4);
@@ -102,9 +109,9 @@ void CSnake::ListenKeyBoard(CSnake& snake, CBarrier& barrier, CFood& food)
 			{
 				//恢复游戏时，将提示清空
 				gotoxy(MAP_X_WALL + 2, 1);
-				cout << "     " << endl;
+				cout << "RUNNING" << endl;
 				gotoxy(MAP_X_WALL + 2, 2);
-				cout << "           " << endl;
+				cout << "q: 暂停游戏" << endl;
 				gotoxy(MAP_X_WALL + 2, 3);
 				cout << "           " << endl;
 				gotoxy(MAP_X_WALL + 2, 4);
@@ -115,7 +122,6 @@ void CSnake::ListenKeyBoard(CSnake& snake, CBarrier& barrier, CFood& food)
 
 			}
 				
-			
 			case '3'://退出游戏
 			{
 				//恢复游戏时，将提示清空
