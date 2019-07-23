@@ -7,6 +7,7 @@ class CSnake
 {
 public:
 	vector<COORD> m_SnakeBody;	//存储蛇身的动态数组
+	COORD m_SnakeTail;			//蛇尾，读取时，蛇尾少了两次，要加一个补上
 	int m_Dir;					//运动方向
 	bool m_IsAlive;				//是否存活
 

@@ -185,6 +185,7 @@ bool CSnake::IsEatenFood(CFood& food, vector<COORD>& barArr)
 	else
 	{
 		//没有吃到食物，删除蛇尾
+		m_SnakeTail = *(m_SnakeBody.end()-1);
 		m_SnakeBody.erase(m_SnakeBody.end() - 1);
 		return false;
 	}

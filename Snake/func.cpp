@@ -260,7 +260,7 @@ void SetLevel()
 void SaveGame(CSnake& snake, CBarrier& barrier, CFood& food)
 {
 	////C++方式
-	//ofstream out("conf\\game.i", ios::out | ios::binary);
+	//ofstream out("conf\\game2.i", ios::out | ios::binary);
 	////写入蛇
 	//for (int i = 0; i < snake.m_SnakeBody.size(); i++)
 	//{
@@ -282,22 +282,27 @@ void SaveGame(CSnake& snake, CBarrier& barrier, CFood& food)
 	g_BarCount = barrier.m_size;//15
 	//打开文件
 	FILE* pFile = NULL;
-	errno_t err = fopen_s(&pFile, "conf\\game2.i", "wb");
+	errno_t err = fopen_s(&pFile, "conf\\game.i", "wb");
+	//写入障碍物数量和蛇的数量
+	fwrite(&g_SnaCount, sizeof(int), 1, pFile);
+	fwrite(&g_BarCount, sizeof(int), 1, pFile);
 	//写入障碍物
 	for (int i = 0; i < barrier.m_size; i++)
 	{
 		fwrite(&barrier.m_BarrArr[i], sizeof(COORD), 1, pFile);
 	}
 	fwrite(&barrier.m_size, sizeof(int), 1, pFile);
+	//写入食物
+	fwrite(&food.m_FoodPos, sizeof(COORD), 1, pFile);
 	//写入蛇
 	for (int i = 0; i < snake.m_SnakeBody.size(); i++)
 	{
 		fwrite(&snake.m_SnakeBody[i], sizeof(COORD), 1, pFile);
 	}
+	fwrite(&snake.m_SnakeTail, sizeof(COORD), 1, pFile);//要把蛇尾也写入，因为读取的蛇，蛇尾会少两次，经过两次iseat函数，故在故在读取时，也要将蛇尾pushback进去，以弥补少的那一个（一般少一个，而读取的蛇少两个
 	fwrite(&snake.m_Dir, sizeof(int), 1, pFile);
 	fwrite(&snake.m_IsAlive, sizeof(bool), 1, pFile);
-	//写入食物
-	fwrite(&food.m_FoodPos, sizeof(COORD), 1, pFile);
+	
 	//关闭文件
 	fclose(pFile);
 
@@ -307,7 +312,7 @@ void SaveGame(CSnake& snake, CBarrier& barrier, CFood& food)
 void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food)
 {
 	////C++方式
-	//ifstream in("conf\\game.i", ios::in | ios::binary);
+	//ifstream in("conf\\game2.i", ios::in | ios::binary);
 	//COORD tmp;
 	////读取蛇
 	//for (int i = 0; i < 3; i++)
@@ -330,27 +335,31 @@ void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food)
 
 	//打开文件
 	FILE* pFile = NULL;
-	errno_t err = fopen_s(&pFile, "conf\\game2.i", "rb");
+	errno_t err = fopen_s(&pFile, "conf\\game.i", "rb");
+	fread(&g_SnaCount, sizeof(int), 1, pFile);
+	fread(&g_BarCount, sizeof(int), 1, pFile);
 	//读取障碍物
 	COORD tmp;
-	for (int i = 0; i <15; i++)
+	for (int i = 0; i <g_BarCount; i++)
 	{
 		fread(&tmp, sizeof(COORD), 1, pFile);
 		barrier.m_BarrArr.push_back(tmp);
 	}
-
 	fread(&barrier.m_size, sizeof(int), 1, pFile);
+	//读取食物
+	fread(&food.m_FoodPos, sizeof(COORD), 1, pFile);
 	//读取蛇
 	COORD tmp2;
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < g_SnaCount; i++)
 	{
 		fread(&tmp2, sizeof(COORD), 1, pFile);
 		snake.m_SnakeBody.push_back(tmp2);
 	}
-	fwrite(&snake.m_Dir, sizeof(int), 1, pFile);//在这报错
-	fwrite(&snake.m_IsAlive, sizeof(bool), 1, pFile);//错
-	//读取食物
-	fread(&food.m_FoodPos, sizeof(COORD), 1, pFile);
+	fread(&snake.m_SnakeTail, sizeof(COORD), 1, pFile);
+	snake.m_SnakeBody.push_back(snake.m_SnakeTail);//少了两次，要加一个进去以弥补
+	fread(&snake.m_Dir, sizeof(int), 1, pFile);//在这报错
+	fread(&snake.m_IsAlive, sizeof(bool), 1, pFile);//错
+
 	//关闭文件
 	fclose(pFile);
 
