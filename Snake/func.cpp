@@ -112,16 +112,17 @@ void GameOver(int score)
 //打印相关信息
 void DrawGameInfo(int score,int barrSize)
 {
+	g_Speed = 5 + (300 - g_SleepTime) / 25;
 	gotoxy(MAP_X - 22 + 14, 6);
 	cout << "  ";
 	gotoxy(MAP_X - 22 + 14, 4);
 	cout << "  ";
 	gotoxy(MAP_X - 22, 6);
-	cout << "当前分数: " << score - 3 << endl;//-3，原始蛇长为3
+	cout << "当前分数: " << (score - 3)*5 << endl;//-3，原始蛇长为3,*5，吃一个为5分
 	gotoxy(MAP_X - 22, 8);
 	cout << "障碍个数: " << barrSize << endl;//
 	gotoxy(MAP_X - 22, 10);
-	cout << "当前速度: " << "Not Set" << endl;//
+	cout << "当前速度: " << g_Speed << endl;//
 
 }
 
@@ -168,11 +169,11 @@ void GameInit()
 	}
 
 	//隐藏光标
-	//HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	//CONSOLE_CURSOR_INFO CursorInfo;
-	//GetConsoleCursorInfo(handle, &CursorInfo);	//获取控制台光标信息
-	//CursorInfo.bVisible = false;				//隐藏控制台光标
-	//SetConsoleCursorInfo(handle, &CursorInfo);	//设置控制台光标状态
+	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO CursorInfo;
+	GetConsoleCursorInfo(handle, &CursorInfo);	//获取控制台光标信息
+	CursorInfo.bVisible = false;				//隐藏控制台光标
+	SetConsoleCursorInfo(handle, &CursorInfo);	//设置控制台光标状态
 
 	//初始化随机数种子
 	srand((unsigned int)time(0));
@@ -242,6 +243,8 @@ void SaveGame(CSnake& snake, CBarrier& barrier, CFood& food)
 	//打开文件
 	FILE* pFile = NULL;
 	errno_t err = fopen_s(&pFile, "conf\\game.i", "wb");
+	//写入当前睡眠时间，以保证速度在读取时也不变
+	fwrite(&g_SleepTime, sizeof(int), 1, pFile);
 	//写入障碍物数量和蛇的数量
 	fwrite(&g_SnaCount, sizeof(int), 1, pFile);
 	fwrite(&g_BarCount, sizeof(int), 1, pFile);
@@ -295,6 +298,10 @@ void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food)
 	//打开文件
 	FILE* pFile = NULL;
 	errno_t err = fopen_s(&pFile, "conf\\game.i", "rb");
+
+	//读取当前睡眠时间，以保证速度在读取时也不变
+	fread(&g_SleepTime, sizeof(int), 1, pFile);
+	//写入障碍物数量和蛇的数量
 	fread(&g_SnaCount, sizeof(int), 1, pFile);
 	fread(&g_BarCount, sizeof(int), 1, pFile);
 	//读取障碍物
@@ -530,21 +537,38 @@ int HandleSelectMap()
 
 }
 
-int HandleSelectLevel()
+void HandleSelectLevel()
 {
+	//通过时间和障碍来控制难度
 	system("cls");
 
 	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 6);
-	cout << "请选择难度：" << endl;
+	cout << "游戏难度：" << endl;
 	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 4);
 	cout << "1. 简单" << endl;
 	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 2);
-	cout << "2. 困难" << endl;
+	cout << "2. 一般" << endl;
 	gotoxy(MAP_X / 2 - 10, MAP_Y / 2);
-	cout << "3. 地狱" << endl;
-	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 2);
+	cout << "3. 困难" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2+2);
 	cout << "请输入选择-> ";
-	return 0;
+
+	char cch = _getch();
+	switch (cch)
+	{
+	case '1'://简单
+		g_LevelBarrsize = 10;
+		g_SleepTime = 400;
+		break;
+	case '2'://一般
+		g_LevelBarrsize = 20;
+		g_SleepTime = 300;
+		break;
+	case '3'://困难
+		g_LevelBarrsize = 40;
+		g_SleepTime = 200;
+		break;
+	}
 }
 
 ////游戏主循环

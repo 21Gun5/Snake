@@ -54,13 +54,12 @@ int main()
 			pbarrier = new CBarrier;
 			LoadMap(*pbarrier);
 		}
-		else
+		else//系统默认地图，可选择难度
 		{
-			pbarrier = new CBarrier(psnake->m_SnakeBody, 15);//默认为20个，也可自定义
+			HandleSelectLevel();
+			pbarrier = new CBarrier(psnake->m_SnakeBody, g_LevelBarrsize);//默认为20个，也可自定义
 		}
 		pfood = new CFood(psnake->m_SnakeBody, pbarrier->m_BarrArr);
-		
-
 	}
 	//2.2 若读档，从文件读取，则各对象无参实例化，以接受数据
 	else if (op == 2)
@@ -106,7 +105,7 @@ int main()
 			break;
 		}
 		// 4.4 控制游戏速度
-		Sleep(g_speed);
+		Sleep(g_SleepTime);
 	}
 
 	//5. 消耗多余字符，用户按键后才会显示系统信息

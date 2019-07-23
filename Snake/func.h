@@ -21,7 +21,7 @@ int HandleSelect();//处理用户输入（新游戏or退出游戏……
 
 int HandleSelectMap();//处理用户输入（选择系统系统or自定义地图
 
-int HandleSelectLevel();//处理用户输入（选择难度
+void HandleSelectLevel();//处理用户输入（选择难度
 
 void SaveGame(CSnake& snake, CBarrier& barrier, CFood& food);//存档
 

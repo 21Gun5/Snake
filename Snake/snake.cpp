@@ -38,30 +38,39 @@ void CSnake::ListenKeyBoard(CSnake& snake, CBarrier& barrier, CFood& food)
 		switch (ch)
 		{
 		case 'w':
-		case 'W':
+		{
 			if (this->m_Dir == DOWN)
 				break;
 			this->m_Dir = UP;
 			break;
+		}
+
 		case 's':
-		case 'S':
+		{
 			if (this->m_Dir == UP)
 				break;
 			this->m_Dir = DOWN;
 			break;
+
+		}
+
 		case 'a':
-		case 'A':
+		{
 			if (this->m_Dir == RIGHT)
 				break;
 			this->m_Dir = LEFT;
 			break;
+		}
+
 		case 'd':
-		case 'D':
+		{
 			if (this->m_Dir == LEFT)
 				break;
 			this->m_Dir = RIGHT;
 			break;
 			//暂停及恢复
+		}
+
 		case 'q':
 		{	//case里定义变量要加大括号
 
@@ -90,7 +99,7 @@ void CSnake::ListenKeyBoard(CSnake& snake, CBarrier& barrier, CFood& food)
 				cout << "           " << endl;
 				break;
 			case '2'://存档
-				
+			{
 				//恢复游戏时，将提示清空
 				gotoxy(MAP_X_WALL + 2, 1);
 				cout << "     " << endl;
@@ -103,7 +112,12 @@ void CSnake::ListenKeyBoard(CSnake& snake, CBarrier& barrier, CFood& food)
 
 				SaveGame(snake, barrier, food);
 				break;
+
+			}
+				
+			
 			case '3'://退出游戏
+			{
 				//恢复游戏时，将提示清空
 				gotoxy(MAP_X_WALL + 2, 1);
 				cout << "     " << endl;//恢复游戏时，将提示清空
@@ -114,30 +128,36 @@ void CSnake::ListenKeyBoard(CSnake& snake, CBarrier& barrier, CFood& food)
 				gotoxy(MAP_X_WALL + 2, 4);
 				cout << "           " << endl;
 
-				GameOver(this->m_SnakeBody.size()+1);//分数那是-3的，而蛇跑时会有删除尾巴，+3-1应该为+2，为何+1正确？
+				GameOver(this->m_SnakeBody.size() + 1);//分数那是-3的，而蛇跑时会有删除尾巴，+3-1应该为+2，为何+1正确？
 				g_isRunning = false;
 				break;
+			}
 			default:
 				break;
 			}
+			break;
 
-
+			
 		}
-
 
 		//键盘控制速度
 		case '+':
-			if (g_speed >= 25)
-			{
-				g_speed -= 25;
-			}
+		{
+			g_SleepTime -= 25;
+			//g_Speed++;//一个速度级对应25个时间级
 			break;
+		}
+
 		case '-':
-			if (g_speed < 250)
+		{
+			if (g_SleepTime > 400)//最小速度为1，不可再小
 			{
-				g_speed += 25;
+				break;
 			}
+			g_SleepTime += 25;
+			//g_Speed--;
 			break;
+		}
 
 		default:
 			break;
@@ -173,13 +193,21 @@ void CSnake::MoveSnake(CSnake& snake, CBarrier& barrier, CFood& food)
 bool CSnake::IsEatenFood(CFood& food, vector<COORD>& barArr)
 {
 	COORD foodPos = food.GetFoodPos();	//食物坐标
+	
 	//坐标重合即吃到食物（吃到后则重新生成食物，不删除蛇尾
-
 	if (m_SnakeBody[HEAD].X == foodPos.X && m_SnakeBody[HEAD].Y == foodPos.Y)
 	{
+		//一个食物五分，5个食物即25分，为一个速度等级
+		g_foodCount++;
+		if (g_foodCount == 5)
+		{
+			g_SleepTime -= 25;
+			g_foodCount = 0;
+		}
 		//PlaySoundA("conf\\eat.wav", NULL, SND_ASYNC | SND_NODEFAULT);
-
 		food.GetRandomPos(m_SnakeBody, barArr);
+
+
 		return true;
 	}
 	else
