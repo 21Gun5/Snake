@@ -1,7 +1,3 @@
-﻿  SnakeMain.cpp
-  func.cpp
-C:\Users\ry1yn\source\repos\15PB\Snake\func.cpp(298,20): warning C4018:  “<”: 有符号/无符号不匹配
-C:\Users\ry1yn\source\repos\15PB\Snake\func.cpp(393,16): warning C4838:  从“int”转换到“SHORT”需要收缩转换
-  正在生成代码...
-C:\Users\ry1yn\source\repos\15PB\Snake\func.cpp(393,19): warning C4838:  从“int”转换到“SHORT”需要收缩转换
+﻿  func.cpp
+C:\Users\ry1yn\source\repos\15PB\Snake\func.cpp(292,20): warning C4018:  “<”: 有符号/无符号不匹配
   Snake.vcxproj -> C:\Users\ry1yn\source\repos\15PB\Debug\Snake.exe

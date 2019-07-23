@@ -36,8 +36,10 @@ void DrawWelcome()
 	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 4);
 	cout << "2. 读取游戏" << endl;
 	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 -2);
-	cout << "3. 退出游戏" << endl;
-	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 -0);
+	cout << "3. 绘制地图" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2);
+	cout << "4. 退出游戏" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 +2);
 	cout << "请输入选择-> ";
 }
 
@@ -59,7 +61,10 @@ int HandleSelect()
 		g_isRunning = true;
 		res = 2;
 		break;
-	case '3'://退出游戏
+	case '3'://自定义地图
+		res = 3;
+		break;
+	case '4'://退出游戏
 		gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 3);
 		cout << "Bye！" << endl; 
 		res = 0;
@@ -213,7 +218,8 @@ void GameInit()
 	//	PlaySoundA("conf\\BGM.wav", NULL, SND_ASYNC | SND_NODEFAULT);
 	//}
 
-	PlaySoundA("conf\\BGM.wav", NULL, SND_ASYNC | SND_NODEFAULT);
+	//先别播，烦人
+	//PlaySoundA("conf\\BGM.wav", NULL, SND_ASYNC | SND_NODEFAULT);
 		
 }
 
@@ -243,18 +249,6 @@ void setColor(unsigned short ForeColor, unsigned short BackGroundColor)
 	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);//获取当前窗口句柄
 	SetConsoleTextAttribute(handle, ForeColor + BackGroundColor * 0x10);//设置颜色
 }
-
-//设置游戏难度等级
-void SetLevel()
-{
-
-}
-
-////游戏主循环
-//void PlayGame(CSnake & snake,CBarrier & barrier, CFood & food)
-//{
-//
-//}
 
 //存档
 void SaveGame(CSnake& snake, CBarrier& barrier, CFood& food)
@@ -376,6 +370,134 @@ void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food)
 
 }
 
+//自定义地图
+void CustomizeMap()
+{
+	DrawMap();
+
+	HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
+	INPUT_RECORD ir = {};
+	DWORD dwCount = 0;
+	SetConsoleMode(hInput, ENABLE_MOUSE_INPUT);
+
+	vector<COORD> BarrTmp;//障碍物数组
+	int barrTmpSize  =0;
+
+	while (true)
+	{
+		ReadConsoleInput(hInput,&ir,1,&dwCount);
+		if (ir.EventType == MOUSE_EVENT)
+		{
+			if (ir.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
+			{
+				COORD pos = ir.Event.MouseEvent.dwMousePosition;//获取按键的位置
+				if (pos.X > 0 && pos.X < MAP_X_WALL && pos.Y >0 && pos.Y < MAP_Y)
+				{
+					BarrTmp.push_back(pos);//加入数组
+					barrTmpSize++;
+					gotoxy4s(pos.X/2, pos.Y);//按理说，不再需要x/2，但pos是通过鼠标事件获得的，同一般生成的不同（内部细节不深究）
+					cout << "※";
+				}
+			}
+			if (ir.Event.MouseEvent.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
+			{
+				COORD pos = ir.Event.MouseEvent.dwMousePosition;
+				if (pos.X > 0 && pos.X < MAP_X_WALL && pos.Y >0 && pos.Y < MAP_Y)
+				{
+					for (vector<COORD>::iterator it = BarrTmp.begin(); it!=  BarrTmp.end(); it++)
+					{
+						if (pos.X == it->X && pos.Y == it->Y)//若是数组里的，则删除
+						{
+							BarrTmp.erase(it);
+							barrTmpSize--;
+							gotoxy4s(pos.X/2, pos.Y);
+							cout << "  ";
+						}
+					}
+					
+				}	
+			}
+		}
+	}
+
+	////写入地图文件
+	//FILE* pFile = NULL;
+	//errno_t err = fopen_s(&pFile, "conf\\map.i", "wb");
+	//fwrite(&barrTmpSize, sizeof(int), 1, pFile);//写入障碍物数量
+	//for (int i = 0; i < BarrTmp.size(); i++)//写入障碍物
+	//{
+	//	fwrite(&BarrTmp[i], sizeof(COORD), 1, pFile);
+	//}
+	//fclose(pFile);
+
+
+
+}
+
+int HandleSelectMap()
+{
+	system("cls");
+
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 6);
+	cout << "请选择地图：" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 4);
+	cout << "1. 系统默认" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 2);
+	cout << "2. 玩家提供" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2);
+	cout << "3. 返回上页" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2+2);
+	cout << "请输入选择-> ";
+
+	//char ch = getchar();//需要回车来确定，且输入可见
+
+	//switch (ch)
+	//{
+	//case '1'://系统默认
+	//	break;
+	//case '2'://玩家提供
+	//	break;
+	//case '3'://返回上页
+	//	break;
+	//default:
+	//	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 3);
+	//	cout << "输入错误";
+	//	break;
+	//}
+
+	return 0;
+
+}
+
+int HandleSelectLevel()
+{
+	system("cls");
+
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 6);
+	cout << "请选择难度：" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 4);
+	cout << "1. 简单" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 2);
+	cout << "2. 困难" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2);
+	cout << "3. 地狱" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 2);
+	cout << "请输入选择-> ";
+	return 0;
+}
+
+////游戏主循环
+//void PlayGame(CSnake & snake,CBarrier & barrier, CFood & food)
+//{
+//
+//}
+
+////设置游戏难度等级
+//void SetLevel()
+//{
+//
+//}
+
 //void PlaySnd(string sound)
 //{
 //	//播放BGM
@@ -387,118 +509,123 @@ void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food)
 ///////////////////////////////////////////////////////////////////////////////////
 
 //1. 在屏幕任何位置输出字符串
-void WriteChar(int x, int y, const char* p, int color = 0)
-{
-	HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);//获取标准输出句柄（在这是屏幕
-	COORD pos = { x, y };//坐标结构体
-	SetConsoleCursorPosition(hOutput, pos);//将光标移动到 屏幕上指定坐标位置
-	printf(p);//在指定位置打印
-}
+//void WriteChar(int x, int y, const char* p, int color = 0)
+//{
+//	HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);//获取标准输出句柄（在这是屏幕
+//	COORD pos = { x, y };//坐标结构体
+//	SetConsoleCursorPosition(hOutput, pos);//将光标移动到 屏幕上指定坐标位置
+//	printf(p);//在指定位置打印
+//}
 
-// 2. 受控制的自由移动的点
-void moveSth()
-{
-	//光标不可见
-	HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);//获取屏幕句柄（句柄就理解为指向某对象的指针，此句柄就代表某对象）
-	CONSOLE_CURSOR_INFO cci;//控制台光标对象
-	cci.dwSize = sizeof(cci);//光标大小？？干嘛用？
-	cci.bVisible = FALSE;//设置光标状态为不可见
-	SetConsoleCursorInfo(hOutput, &cci);//将光标状态应用到屏幕上
+//// 2. 受控制的自由移动的点
+//void moveSth()
+//{
+//	//光标不可见
+//	HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);//获取屏幕句柄（句柄就理解为指向某对象的指针，此句柄就代表某对象）
+//	CONSOLE_CURSOR_INFO cci;//控制台光标对象
+//	cci.dwSize = sizeof(cci);//光标大小？？干嘛用？
+//	cci.bVisible = FALSE;//设置光标状态为不可见
+//	SetConsoleCursorInfo(hOutput, &cci);//将光标状态应用到屏幕上
+//
+//	int x = 10;
+//	int y = 20;
+//	int nDir = 0;
+//	char ch = 0;
+//	while (true)
+//	{
+//		int Oldx = x;
+//		int Oldy = y;
+//		WriteChar(x, y, "☆");//指定位置打印星星
+//		if (_kbhit() == 1)//非阻塞函数，不同于scanf，会一直阻塞等待用户输入
+//		{
+//			ch = _getch();//无回显的获取字符
+//		}
+//		else
+//		{
+//			ch = 0;
+//		}
+//		switch (ch)//通过按键来控制方向，再通过方向来控制位置变化（不同于上面，直接通过按键来控制位置
+//		{
+//		case 'w':
+//			nDir = 0;
+//			break;
+//		case 's':
+//			nDir = 1;
+//			break;
+//		case 'a':
+//			nDir = 2;
+//			break;
+//		case 'd':
+//			nDir = 3;
+//			break;
+//		default:
+//			break;
+//		}
+//
+//		switch (nDir)//再通过方向来控制位置变化（方向是中间人角色）
+//		{
+//		case 0:
+//			y--;
+//			break;
+//		case 1:
+//			y++;
+//			break;
+//		case 2:
+//			x--;
+//			break;
+//		case 3:
+//			x++;
+//			break;
+//		default:
+//			break;
+//		}
+//		Sleep(100);//控制速度
+//		//旧位置打印空，新位置打印字符，实现移动的效果
+//		//尽量避免system("cls")清屏这种方式，会使屏幕闪
+//		WriteChar(Oldx, Oldy, " ");//老位置
+//		WriteChar(x, y, "☆");
+//	}
+//}
 
-	int x = 10;
-	int y = 20;
-	int nDir = 0;
-	char ch = 0;
-	while (true)
-	{
-		int Oldx = x;
-		int Oldy = y;
-		WriteChar(x, y, "☆");//指定位置打印星星
-		if (_kbhit() == 1)//非阻塞函数，不同于scanf，会一直阻塞等待用户输入
-		{
-			ch = _getch();//无回显的获取字符
-		}
-		else
-		{
-			ch = 0;
-		}
-		switch (ch)//通过按键来控制方向，再通过方向来控制位置变化（不同于上面，直接通过按键来控制位置
-		{
-		case 'w':
-			nDir = 0;
-			break;
-		case 's':
-			nDir = 1;
-			break;
-		case 'a':
-			nDir = 2;
-			break;
-		case 'd':
-			nDir = 3;
-			break;
-		default:
-			break;
-		}
-
-		switch (nDir)//再通过方向来控制位置变化（方向是中间人角色）
-		{
-		case 0:
-			y--;
-			break;
-		case 1:
-			y++;
-			break;
-		case 2:
-			x--;
-			break;
-		case 3:
-			x++;
-			break;
-		default:
-			break;
-		}
-		Sleep(100);//控制速度
-		//旧位置打印空，新位置打印字符，实现移动的效果
-		//尽量避免system("cls")清屏这种方式，会使屏幕闪
-		WriteChar(Oldx, Oldy, " ");//老位置
-		WriteChar(x, y, "☆");
-	}
-}
-
-// 3. 鼠标画图（没效果？
-void DrawMouse()
-{
-	HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);//获取屏幕句柄
-	INPUT_RECORD ir = {};//输入记录
-	DWORD dwCount = 0;//信息数量
-	while (true)
-	{
-		//从屏幕上获取信息，并将信息传到其他对象上（屏幕是输入，其他对象是输出，类似管道）
-		ReadConsoleInput(
-			hInput,  //输出句柄，固定写法，在这是屏幕，即从屏幕上获取信息 （传入参数
-			&ir,     //用于获取在控制台上的信息，从屏幕上获取了啥   （传出参数
-			1,       //ir的个数，一共有多少输入的东西，为1，即只有鼠标这一个（自己理解的）（传入参数
-			&dwCount //读取了多少个信息  （传出参数
-		);
-		if (ir.EventType == MOUSE_EVENT)//如果屏幕上发生了鼠标按键事件
-		{
-			if (ir.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)//如果是左键
-			{
-				COORD pos = ir.Event.MouseEvent.dwMousePosition;//获取按键的位置
-				//因为上下是一个字符，左右是半个字符，故x坐标要/2，使得上下与左右的速度一致（为何是x/2？）
-				WriteChar(pos.X / 2, pos.Y, "☆");//在按键的位置画图；
-
-			}
-			if (ir.Event.MouseEvent.dwButtonState == RIGHTMOST_BUTTON_PRESSED)//如果是右键
-			{
-				COORD pos = ir.Event.MouseEvent.dwMousePosition;
-				WriteChar(pos.X / 2, pos.Y, " ");//在按键的位置清空（打印空字符
-			}
-
-		}
-	}
-
-}
+//// 3. 鼠标画图
+//void DrawMouse()
+//{
+//	system("cls");
+//	HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
+//	INPUT_RECORD ir = {};
+//	DWORD dwCount = 0;
+//
+//	SetConsoleMode(hInput, ENABLE_MOUSE_INPUT);
+//	while (true)
+//	{
+//		
+//		ReadConsoleInput(
+//			hInput,  
+//			&ir,     
+//			1,       
+//			&dwCount 
+//		);
+//		if (ir.EventType == MOUSE_EVENT)
+//		{
+//			if (ir.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
+//			{
+//				COORD pos = ir.Event.MouseEvent.dwMousePosition;//获取按键的位置
+//				//因为上下是一个字符，左右是半个字符，故x坐标要/2，使得上下与左右的速度一致（为何是x/2？）
+//				gotoxy4s(pos.X / 2, pos.Y);
+//				cout << "※";
+//
+//			}
+//			if (ir.Event.MouseEvent.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
+//			{
+//				COORD pos = ir.Event.MouseEvent.dwMousePosition;
+//				gotoxy4s(pos.X / 2, pos.Y);
+//				cout << "  ";
+//			}
+//
+//		}
+//	}
+//
+//}
 
 // 4. 移动蛇
 // 5. 吃食物，变长
