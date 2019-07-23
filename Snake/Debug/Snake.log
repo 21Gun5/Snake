@@ -1,5 +1,6 @@
-﻿  snake.cpp
-C:\Users\ry1yn\source\repos\15PB\Snake\snake.cpp(244,20): warning C4018:  “<”: 有符号/无符号不匹配
-C:\Users\ry1yn\source\repos\15PB\Snake\snake.cpp(254,20): warning C4018:  “<”: 有符号/无符号不匹配
-C:\Users\ry1yn\source\repos\15PB\Snake\snake.cpp(272,20): warning C4018:  “<”: 有符号/无符号不匹配
+﻿  func.cpp
+C:\Users\ry1yn\source\repos\15PB\Snake\func.cpp(276,20): warning C4018:  “<”: 有符号/无符号不匹配
+C:\Users\ry1yn\source\repos\15PB\Snake\func.cpp(448,20): warning C4838:  从“int”转换到“SHORT”需要收缩转换
+C:\Users\ry1yn\source\repos\15PB\Snake\func.cpp(448,23): warning C4838:  从“int”转换到“SHORT”需要收缩转换
+C:\Users\ry1yn\source\repos\15PB\Snake\func.cpp(459,20): warning C4018:  “<”: 有符号/无符号不匹配
   Snake.vcxproj -> C:\Users\ry1yn\source\repos\15PB\Debug\Snake.exe

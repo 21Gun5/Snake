@@ -48,33 +48,6 @@ void DrawMap()
 {
 	system("cls");//先清屏
 
-	////上边界
-	//for (int i = 0; i < MAP_X; i++)
-	//	cout << "#";
-	//cout << endl;
-	////其他边界here
-	//for (int i = 0; i < MAP_Y - 2; i++)
-	//{
-	//	for (int j = 0; j < MAP_X; j++)
-	//	{
-	//		if (i == 13 && j >= MAP_X - 29)
-	//		{
-	//			cout << "#";
-	//			continue;
-	//		}
-	//		if (j == 0 || j == MAP_X - 29 || j == MAP_X - 1)
-	//		{
-	//			cout << "#";
-	//		}
-	//		else
-	//			cout << " ";
-	//	}
-	//	cout << endl;
-	//}
-	////下边界
-	//for (int i = 0; i < MAP_X; i++)
-	//	cout << "#";
-
 	for (int x = 0; x < MAP_X; x+=2)//要x+=2，还是因为x1b，y2b老问题
 	{
 		for (int y = 0; y < MAP_Y; y++)
@@ -92,6 +65,24 @@ void DrawMap()
 			}
 		}
 	}
+
+	//for (int x = 0; x < MAP_X; x+=2)//要x+=2，还是因为x1b，y2b老问题
+	//{
+	//	for (int y = 0; y < MAP_Y; y++)
+	//	{
+	//		if (g_MAP[x][y] == 边界)
+	//		{
+	//			gotoxy4s(x, y);
+	//			cout << "※";//占2B
+	//			//cout << "#";
+	//		}
+	//		else
+	//		{
+	//			gotoxy(x, y);
+	//			cout << "  ";
+	//		}
+	//	}
+	//}
 
 }
 
@@ -174,6 +165,24 @@ void GameInit()
 			}
 		}
 	}
+
+	////设置地图
+	//for (int x = 0; x < MAP_X; x++)
+	//{
+	//	for (int y = 0; y < MAP_Y; y++)
+	//	{
+	//		//地图边界
+	//		if (x == 0 || x == MAP_X  || y == 0 || y == MAP_Y - 1 || x== MAP_X_WALL || (x>MAP_X_WALL&& x<MAP_X && y== MAP_Y/2))//x == MAP_X-2还是xy轴的老问题
+	//		{
+	//			g_MAP[x][y] = 边界;
+	//		}
+	//		//地图中的障碍物
+	//		else
+	//		{
+	//			g_MAP[x][y] = 空地;
+	//		}
+	//	}
+	//}
 
 	//隐藏光标
 	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -349,6 +358,7 @@ void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food)
 
 }
 
+
 //自定义地图
 void SaveMap()
 {
@@ -387,7 +397,7 @@ void SaveMap()
 					//barrTmpSize++;
 
 					g_BarrMAP[pos.X][pos.Y] = 1;
-					gotoxy4s(pos.X/2, pos.Y);//按理说，不再需要x/2，但pos是通过鼠标事件获得的，同一般生成的不同（内部细节不深究）
+					gotoxy4s(pos.X/2, pos.Y);//在这/2真是妙的一匹，5/2*2=4，保证这x方向占两个单位的字符，x只能是偶数，这样能减少出错，妙！
 					cout << "※";
 				}
 			}
@@ -433,7 +443,15 @@ void SaveMap()
 		{
 			if (g_BarrMAP[i][j] == 1)
 			{
-				COORD tmp = { i,j };
+				/*
+				原来是51，避免x是奇数，故/2*2，即5/2*2=4，即得41
+				若直接调X=x*2的那个移动函数，则在81打印
+				若要得正确的41，则再/2
+				真他妈坑啊，藏得真深，x轴一个单位，而y轴两个单位，坑！谨记！
+				*/
+				int t = i / 2;//5/2=2
+				t = t * 2;//2*2=4，妙啊！！！
+				COORD tmp = { t/2,j };//，因为打印的时候还要*2，故再除二
 				BarrTmp.push_back(tmp);
 				barrTmpSize++;
 			}
@@ -451,6 +469,7 @@ void SaveMap()
 	fclose(pFile);
 }
 
+//导入用户自定义的地图
 void LoadMap(CBarrier& barrier)
 {
 	//vector<COORD> BarrTmp;//障碍物数组
@@ -544,6 +563,7 @@ int HandleSelectMap()
 
 }
 
+//处理用户输入（选择等级）
 void HandleSelectLevel()
 {
 	//通过时间和障碍来控制难度
