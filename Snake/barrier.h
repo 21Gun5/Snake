@@ -11,5 +11,7 @@ public:
 	CBarrier();
 	CBarrier(vector<COORD>& snaBody,int size = 20);
 	void DrawBarr();
+	//vector<COORD> SetBarr();
+	//void SaveBarrFile(vector<COORD> &BarrTmp);
 	int GetBarrSize();
 };

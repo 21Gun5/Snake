@@ -19,7 +19,11 @@
 #define 退出游戏 3
 
 #define 系统默认 1
-#define 玩家提供 2
+#define 自定义 2
+
+#define 简单 1
+#define 一般 2
+#define 困难 3
 
 #define 新建地图 1
 #define 已有地图 2

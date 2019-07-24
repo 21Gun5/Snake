@@ -75,15 +75,15 @@ void CSnake::ListenKeyBoard(CSnake& snake, CBarrier& barrier, CFood& food)
 		{	//case里定义变量要加大括号
 			mciSendString("pause bgm", NULL, 0, NULL);//暂停bgm
 			setColor(12, 0);
-			gotoxy(MAP_X_WALL + 2, 1);
+			Gotoxy(MAP_X_WALL + 2, 1);
 			cout << "       " << endl;//暂停的状态标识
-			gotoxy(MAP_X_WALL + 2, 1);
+			Gotoxy(MAP_X_WALL + 2, 1);
 			cout << "PAUSE" << endl;//暂停的状态标识
-			gotoxy(MAP_X_WALL + 2, 2);
+			Gotoxy(MAP_X_WALL + 2, 2);
 			cout << "1. 回到游戏" << endl;
-			gotoxy(MAP_X_WALL + 2, 3);
+			Gotoxy(MAP_X_WALL + 2, 3);
 			cout << "2. 退出游戏" << endl;
-			//gotoxy(MAP_X_WALL + 2, 4);
+			//Gotoxy(MAP_X_WALL + 2, 4);
 			//cout << "3. 退出游戏" << endl;
 
 			char tmp;
@@ -98,13 +98,13 @@ void CSnake::ListenKeyBoard(CSnake& snake, CBarrier& barrier, CFood& food)
 			{
 				mciSendString("resume bgm", NULL, 0, NULL);//恢复bgm
 
-				gotoxy(MAP_X_WALL + 2, 1);
+				Gotoxy(MAP_X_WALL + 2, 1);
 				cout << "RUNNING" << endl;//恢复游戏时，将提示清空
-				gotoxy(MAP_X_WALL + 2, 2);
+				Gotoxy(MAP_X_WALL + 2, 2);
 				cout << "q: 暂停游戏" << endl;
-				gotoxy(MAP_X_WALL + 2, 3);
+				Gotoxy(MAP_X_WALL + 2, 3);
 				cout << "           " << endl;
-				gotoxy(MAP_X_WALL + 2, 4);
+				Gotoxy(MAP_X_WALL + 2, 4);
 				cout << "           " << endl;
 				break;
 			}
@@ -113,11 +113,11 @@ void CSnake::ListenKeyBoard(CSnake& snake, CBarrier& barrier, CFood& food)
 			{
 				//mciSendString("resume bgm", NULL, 0, NULL);//恢复bgm
 				//恢复游戏时，将提示清空
-				gotoxy(MAP_X_WALL + 2, 1);
+				Gotoxy(MAP_X_WALL + 2, 1);
 				cout << "想如何退出?" << endl;
-				gotoxy(MAP_X_WALL + 2, 2);
+				Gotoxy(MAP_X_WALL + 2, 2);
 				cout << "1. 保存退出" << endl;
-				gotoxy(MAP_X_WALL + 2, 3);
+				Gotoxy(MAP_X_WALL + 2, 3);
 				cout << "2. 直接退出" << endl;
 
 				char op = _getch();
@@ -139,13 +139,13 @@ void CSnake::ListenKeyBoard(CSnake& snake, CBarrier& barrier, CFood& food)
 			//case '3'://退出游戏
 			//{
 			//	//恢复游戏时，将提示清空
-			//	gotoxy(MAP_X_WALL + 2, 1);
+			//	Gotoxy(MAP_X_WALL + 2, 1);
 			//	cout << "     " << endl;//恢复游戏时，将提示清空
-			//	gotoxy(MAP_X_WALL + 2, 2);
+			//	Gotoxy(MAP_X_WALL + 2, 2);
 			//	cout << "           " << endl;
-			//	gotoxy(MAP_X_WALL + 2, 3);
+			//	Gotoxy(MAP_X_WALL + 2, 3);
 			//	cout << "           " << endl;
-			//	gotoxy(MAP_X_WALL + 2, 4);
+			//	Gotoxy(MAP_X_WALL + 2, 4);
 			//	cout << "           " << endl;
 			//	GameOver(this->m_SnakeBody.size() + 1);//分数那是-3的，而蛇跑时会有删除尾巴，+3-1应该为+2，为何+1正确？
 			//	g_isRunning = false;
@@ -257,7 +257,7 @@ bool CSnake::IsAlive(vector<COORD>& barArr)
 	{
 		//mciSendString("play duang", NULL, 0, NULL);
 		m_Blood-=3;//撞墙一下就死
-		if(m_Blood == 0) 
+		if(m_Blood <= 0) 
 			m_IsAlive = false;
 		return m_IsAlive;
 	}
@@ -269,7 +269,7 @@ bool CSnake::IsAlive(vector<COORD>& barArr)
 		{
 			//mciSendString("play duang", NULL, 0, NULL);
 			m_Blood--;
-			if (m_Blood == 0)
+			if (m_Blood <= 0)
 				m_IsAlive = false;
 			return m_IsAlive;
 		}
@@ -284,9 +284,8 @@ bool CSnake::IsAlive(vector<COORD>& barArr)
 			//mciSendString("play duang", NULL, 0, NULL);
 			m_Blood--;
 			//barArr.erase(it);//撞障碍物之后便抹除，算了，别找事了，复习吧
-			if (m_Blood == 0)
+			if (m_Blood <= 0)
 				m_IsAlive = false;
-			
 			return m_IsAlive;
 		}
 	}
@@ -302,8 +301,8 @@ void CSnake::DrawSanke()
 	for (int i = 0; i < m_SnakeBody.size(); i++)
 	{
 		//□■
-		//gotoxy(m_SnakeBody[i].X, m_SnakeBody[i].Y);//here
-		gotoxy4s(m_SnakeBody[i].X, m_SnakeBody[i].Y);
+		//Gotoxy(m_SnakeBody[i].X, m_SnakeBody[i].Y);//here
+		GotoxyFor2(m_SnakeBody[i].X, m_SnakeBody[i].Y);
 
 		//蛇头与蛇身设置不同图案
 		if (i == 0)
@@ -322,11 +321,11 @@ void CSnake::DrawSanke()
 }
 
 //清除蛇尾
-void CSnake::ClearSnake()
+void CSnake::ClearSnakeTail()
 {
 	//画蛇前必做，最后一节蛇身用空格表示
-	//gotoxy(m_SnakeBody[m_SnakeBody.size() - 1].X, m_SnakeBody[m_SnakeBody.size() - 1].Y);
-	gotoxy4s(m_SnakeBody[m_SnakeBody.size() - 1].X, m_SnakeBody[m_SnakeBody.size() - 1].Y);//here
+	//Gotoxy(m_SnakeBody[m_SnakeBody.size() - 1].X, m_SnakeBody[m_SnakeBody.size() - 1].Y);
+	GotoxyFor2(m_SnakeBody[m_SnakeBody.size() - 1].X, m_SnakeBody[m_SnakeBody.size() - 1].Y);//here
 
 
 	cout << "  ";//here

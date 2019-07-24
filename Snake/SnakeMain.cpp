@@ -33,92 +33,92 @@ using namespace std;
 
 int main()
 {
-	//0. 定义各对象指针，后续在if中赋值，突破局部变量的局限
-	CSnake* psnake = NULL;//初始化是个好习惯，高老师如是说道
+	// 1.定义各对象指针
+	CSnake* psnake = NULL;
 	CBarrier* pbarrier = NULL;
 	CFood* pfood = NULL;
 
-	// 1. 初始化及欢迎界面
+	// 2.初始化及欢迎界面
 	GameInit();
 	DrawWelcome();
 
-	// 2. 用户想干嘛？
-	int op = HandleSelect();
-	//2.1 若开启新游戏，则各对象有参实例化
-	if (op == 新游戏)
+	// 3.用户选择
+	int action = SelectAction();
+	if (action == 新游戏)
 	{
-		psnake = new CSnake(UP);//方向为UP
-
-		int oop = HandleSelectMap();
-		if (oop == 系统默认)//若是选择自定义的地图
+		psnake = new CSnake(UP);
+		// 01-选谁的地图
+		int whoMap = SelectWhoMap();
+		// 1.1-系统默认地图
+		if (whoMap == 系统默认)
 		{
-			HandleSelectLevel();
+			SelectLevel();		//设置难度等级
 			pbarrier = new CBarrier(psnake->m_SnakeBody, g_LevelBarrsize);//默认为20个，也可自定义
 		}
-		else if(oop == 玩家提供)//系统默认地图，可选择难度
+		// 1.2-用户自定义地图
+		else if(whoMap == 自定义)
 		{
-			//SaveMap();
-			//pbarrier = new CBarrier;//新建地图后，马上就用
-			//LoadMap(*pbarrier);
-
-			int ooop = HandleSelectMap2();
-			if (ooop == 新建地图)
+			// 02-选何时的地图
+			int whenMap = SelectWhenMap();
+			// 2.1-新建地图
+			if (whenMap == 新建地图)
 			{
-				SaveMap();
-				pbarrier = new CBarrier;//新建地图后，马上就用
+				SetMap();
+				pbarrier = new CBarrier;//空对象以接收数据
 				LoadMap(*pbarrier);
 			}
-			else if(ooop == 已有地图)
+			// 2.2-之前建的旧地图
+			else if(whenMap == 已有地图)
 			{
-				pbarrier = new CBarrier;//上次建的旧地图
+				pbarrier = new CBarrier;
 				LoadMap(*pbarrier);
 			}
 		}
-
 		pfood = new CFood(psnake->m_SnakeBody, pbarrier->m_BarrArr);
 	}
-	else if (op == 读取游戏)
+	else if (action == 读取游戏)
 	{
+		//创建空对象，以接受文件数据
 		psnake = new CSnake;
 		pbarrier = new CBarrier;
 		pfood = new CFood;
 		LoadGame(*psnake, *pbarrier, *pfood);
 	}
-	else if (op == 退出游戏)
+	else if (action == 退出游戏)
 	{
 		return 0;
 	}
 
-	// 3. 打印地图及帮助
-	DrawMap();
+	// 4.边界及帮助
+	DrawMapBorder();
 	DrawGameHelp();
 
-	// 4. 游戏主循环
+	// 5.主循环
 	while (g_isRunning)
 	{
-		// 4.1 打印游戏信息、食物、障碍物
-		DrawGameInfo(psnake->GetSnakeSize(), pbarrier->GetBarrSize(),psnake->m_Blood);	//打印分数等信息
-		pfood->DrawFood();					//打印食物
-		pbarrier->DrawBarr();//打印障碍物
+		//游戏信息、食物、障碍物
+		DrawGameInfo(psnake->GetSnakeSize(), pbarrier->GetBarrSize(),psnake->m_Blood);
+		pfood->DrawFood();
+		pbarrier->DrawBarr();
 
-		// 4.2 让蛇移动并将其打印
-		psnake->ClearSnake();					//清理蛇尾
-		psnake->IsEatenFood(*pfood, pbarrier->m_BarrArr);			//是否吃到食物
-		psnake->MoveSnake(*psnake, *pbarrier, *pfood);					//让蛇跑起来
-		psnake->DrawSanke();					//画蛇
+		//蛇移动及显示
+		psnake->ClearSnakeTail();
+		psnake->IsEatenFood(*pfood, pbarrier->m_BarrArr);
+		psnake->MoveSnake(*psnake, *pbarrier, *pfood);
+		psnake->DrawSanke();
 
-		// 4.3 判断是否存活
-		if (!psnake->IsAlive(pbarrier->m_BarrArr))				//是否活着
+		//是否存活
+		if (!psnake->IsAlive(pbarrier->m_BarrArr))
 		{
 			GameOver(psnake->GetSnakeSize());
-			
 			break;
 		}
-		// 4.4 控制游戏速度
+
+		//控制速度
 		Sleep(g_SleepTime);
 	}
 
-	//5. 消耗多余字符，用户按键后才会显示系统信息
+	// 6.消耗多余字符
 	cin.get();
 	cin.get();
 

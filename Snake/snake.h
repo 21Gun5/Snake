@@ -19,6 +19,6 @@ public:
 	bool IsEatenFood(CFood& food, vector<COORD>& barArr);//是否吃到食物
 	bool IsAlive(vector<COORD>& barArr);//判断生死
 	void DrawSanke();//画蛇
-	void ClearSnake();//清除蛇尾
+	void ClearSnakeTail();//清除蛇尾
 	int GetSnakeSize();//获取蛇长
 };

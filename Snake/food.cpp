@@ -53,7 +53,7 @@ void CFood::DrawFood()
 {
 	setColor(12, 0);	//食物红色
 	//gotoxy(m_FoodPos.X, m_FoodPos.Y);
-	gotoxy4s(m_FoodPos.X, m_FoodPos.Y);//here
+	GotoxyFor2(m_FoodPos.X, m_FoodPos.Y);//here
 	cout << "■";
 	setColor(7, 0);		//再换回来
 }
