@@ -120,21 +120,20 @@ void CSnake::ListenKeyBoard(CSnake& snake, CBarrier& barrier, CFood& food)
 				gotoxy(MAP_X_WALL + 2, 3);
 				cout << "2. 直接退出" << endl;
 
-				int op = _getch();
-				if (op == 1)
+				char op = _getch();
+				if (op == '1')//保存退出
 				{
 					SaveGame(snake, barrier, food);
+					GameOver(this->m_SnakeBody.size() + 1);//分数那是-3的，而蛇跑时会有删除尾巴，+3-1应该为+2，为何+1正确？
+					g_isRunning = false;
 					break;
 				}
-				else
+				else if(op == '2')//直接退出
 				{
 					GameOver(this->m_SnakeBody.size() + 1);//分数那是-3的，而蛇跑时会有删除尾巴，+3-1应该为+2，为何+1正确？
 					g_isRunning = false;
 					break;
 				}
-
-
-
 			}
 
 			//case '3'://退出游戏
@@ -148,11 +147,11 @@ void CSnake::ListenKeyBoard(CSnake& snake, CBarrier& barrier, CFood& food)
 			//	cout << "           " << endl;
 			//	gotoxy(MAP_X_WALL + 2, 4);
 			//	cout << "           " << endl;
-
 			//	GameOver(this->m_SnakeBody.size() + 1);//分数那是-3的，而蛇跑时会有删除尾巴，+3-1应该为+2，为何+1正确？
 			//	g_isRunning = false;
 			//	break;
 			//}
+
 			default:
 				break;
 			}

@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <string>
 #include <time.h>
+#include <iomanip>
 #include <conio.h>
 #include "data.h"
 #include "func.h"
@@ -35,11 +36,10 @@ void DrawWelcome()
 	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 4);
 	cout << "2. 读取游戏" << endl;
 	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 2);
-	cout << "3. 绘制地图" << endl;
-	gotoxy(MAP_X / 2 - 10, MAP_Y / 2);
-	cout << "4. 退出游戏" << endl;
-	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 2);
+	cout << "3. 退出游戏" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 -0);
 	cout << "请输入选择-> ";
+	SetCursorState(true);
 }
 
 //打印地图边界
@@ -57,11 +57,11 @@ void DrawMap()
 				cout << "※";//占2B
 				//cout << "#";
 			}
-			else
-			{
-				gotoxy(x, y);
-				cout << " ";
-			}
+			//else
+			//{
+			//	gotoxy(x, y);
+			//	cout << " ";
+			//}
 		}
 	}
 
@@ -119,13 +119,13 @@ void DrawGameInfo(int score, int barrSize,int blood)
 	gotoxy(MAP_X - 22 + 14, 4);
 	cout << "  ";
 	gotoxy(MAP_X - 22, 5);
-	cout << "当前分数: " << (score - 3) * 5 << endl;//-3，原始蛇长为3,*5，吃一个为5分
+	cout << "当前分数: " << setw(2) << (score - 3) * 5 << endl;//-3，原始蛇长为3,*5，吃一个为5分
 	gotoxy(MAP_X - 22, 7);
-	cout << "当前生命: " << blood << endl;//
+	cout << "当前生命: " << setw(2) << blood << endl;//
 	gotoxy(MAP_X - 22, 9);
-	cout << "障碍个数: " << barrSize << endl;//
+	cout << "障碍个数: " << setw(2) << barrSize << endl;//
 	gotoxy(MAP_X - 22, 11);
-	cout << "当前速度: " << g_Speed << endl;//
+	cout << "当前速度: " << setw(2)<< g_Speed << endl;//
 
 }
 
@@ -144,14 +144,19 @@ void DrawGameHelp()
 	//cout << "任意键: 恢复游戏" << endl;
 }
 
+void SetCursorState(bool b)
+{
+	//隐藏光标
+	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO CursorInfo;
+	GetConsoleCursorInfo(handle, &CursorInfo);	//获取控制台光标信息
+	CursorInfo.bVisible = b;				//隐藏控制台光标
+	SetConsoleCursorInfo(handle, &CursorInfo);	//设置控制台光标状态
+}
+
 //初始化工作
 void GameInit()
 {
-	////设置窗口大小here
-	//char buf[32];
-	//sprintf_s(buf, "mode con cols=%d lines=%d", MAP_X, MAP_Y);
-	//system(buf);
-
 	//设置地图
 	for (int x = 0; x < MAP_X; x++)
 	{
@@ -171,18 +176,20 @@ void GameInit()
 		}
 	}
 
+
 	//隐藏光标
-	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_CURSOR_INFO CursorInfo;
-	GetConsoleCursorInfo(handle, &CursorInfo);	//获取控制台光标信息
-	CursorInfo.bVisible = false;				//隐藏控制台光标
-	SetConsoleCursorInfo(handle, &CursorInfo);	//设置控制台光标状态
+	SetCursorState(false);
+	//HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	//CONSOLE_CURSOR_INFO CursorInfo;
+	//GetConsoleCursorInfo(handle, &CursorInfo);	//获取控制台光标信息
+	//CursorInfo.bVisible = false;				//隐藏控制台光标
+	//SetConsoleCursorInfo(handle, &CursorInfo);	//设置控制台光标状态
 
 	//初始化随机数种子
 	srand((unsigned int)time(0));
 
 	//播放背景音乐（可循环
-	PlaySnd();
+	//PlaySnd();
 }
 
 //移动光标（打印食物、蛇、障碍物
@@ -443,8 +450,29 @@ void SaveMap()
 		}
 	}
 
+	//string mapName;
+
+	//setColor(12, 0);
+	//gotoxy(MAP_X - 24, 12);
+	//cout << "请输入地图名字：" << endl;
+	//SetCursorState(true);
+	//setColor(7, 0);
+	//gotoxy(MAP_X - 24, 13);
+	//cin >> mapName;
+	//SetCursorState(false);
+	////scanf_s("%s", mapName,20);
+	//
+
+	//string mapFile = "conf\\" + mapName + ".i";
+	//const char* pmapfile = mapFile.c_str();
+
+
 	//写入地图文件
 	FILE* pFile = NULL;
+	//errno_t err = fopen_s(&pFile,pmapfile, "wb");
+	int n = 1;
+
+
 	errno_t err = fopen_s(&pFile, "conf\\map.i", "wb");
 	fwrite(&barrTmpSize, sizeof(int), 1, pFile);//写入障碍物数量
 	for (int i = 0; i < BarrTmp.size(); i++)//写入障碍物
@@ -453,6 +481,12 @@ void SaveMap()
 	}
 	fclose(pFile);
 }
+
+//void SaveMap()
+//{
+//
+//}
+
 
 //导入用户自定义的地图
 void LoadMap(CBarrier& barrier)
@@ -483,7 +517,7 @@ int HandleSelect()
 {
 	//char ch = getchar();//需要回车来确定，且输入可见
 	char ch = _getch();//不需回车来确定，且无回显
-
+	SetCursorState(false);//输入完就关闭光标的显示
 	int res = 0;
 
 	switch (ch)
@@ -526,17 +560,19 @@ int HandleSelectMap()
 	cout << "2. 玩家提供" << endl;
 	gotoxy(MAP_X / 2 - 10, MAP_Y / 2);
 	cout << "请输入选择-> ";
+	SetCursorState(true);
 
 	int rres = 0;
-	//char cch = getchar();//需要回车来确定，且输入可见
 	char cch = _getch();
+	SetCursorState(false);
 
 	switch (cch)
 	{
-	case '1'://系统默认
+	case '1':
+		rres = 系统默认;
 		break;
-	case '2'://玩家提供
-		rres = 1;
+	case '2':
+		rres = 玩家提供;
 		break;
 	default:
 		gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 3);
@@ -564,8 +600,10 @@ void HandleSelectLevel()
 	cout << "3. 困难" << endl;
 	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 2);
 	cout << "请输入选择-> ";
+	SetCursorState(true);
 
 	char cch = _getch();
+	SetCursorState(false);
 	switch (cch)
 	{
 	case '1'://简单
@@ -583,6 +621,39 @@ void HandleSelectLevel()
 	}
 }
 
+//新建地图or旧地图
+int HandleSelectMap2()
+{
+	//通过时间和障碍来控制难度
+	system("cls");
+
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 6);
+	cout << "地图选择" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 4);
+	cout << "1. 新建地图" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 2);
+	cout << "2. 已有地图" << endl;
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 );
+	cout << "请输入选择-> ";
+	SetCursorState(true);
+
+	int res = 0;
+	char cch = _getch();
+	SetCursorState(false);
+	switch (cch)
+	{
+	case '1'://新建地图
+		res = 1;
+		break;
+	case '2'://已有地图
+		res = 2;
+		break;
+	default:
+		break;
+	}
+	return res;
+}
+
 //播放背景音乐（可循环)
 void PlaySnd()
 {
@@ -597,9 +668,4 @@ void PlaySnd()
 	mciSendString("play bgm repeat", NULL, 0, NULL);
 }
 
-////游戏主循环
-//void PlayGame(CSnake & snake,CBarrier & barrier, CFood & food)
-//{
-//
-//}
 

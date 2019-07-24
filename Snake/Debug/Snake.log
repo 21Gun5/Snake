@@ -1,10 +1,17 @@
-﻿  func.cpp
-C:\Users\ry1yn\source\repos\15PB\Snake\func.cpp(258,20): warning C4018:  “<”: 有符号/无符号不匹配
-C:\Users\ry1yn\source\repos\15PB\Snake\func.cpp(439,21): warning C4838:  从“int”转换到“SHORT”需要收缩转换
-C:\Users\ry1yn\source\repos\15PB\Snake\func.cpp(439,25): warning C4838:  从“int”转换到“SHORT”需要收缩转换
+﻿  SnakeMain.cpp
+  barrier.cpp
+  data.cpp
+  food.cpp
+C:\Users\ry1yn\source\repos\15PB\Snake\barrier.cpp(20,21): warning C4018:  “<”: 有符号/无符号不匹配
+C:\Users\ry1yn\source\repos\15PB\Snake\food.cpp(27,20): warning C4018:  “<”: 有符号/无符号不匹配
+  func.cpp
+C:\Users\ry1yn\source\repos\15PB\Snake\food.cpp(38,20): warning C4018:  “<”: 有符号/无符号不匹配
+C:\Users\ry1yn\source\repos\15PB\Snake\func.cpp(265,20): warning C4018:  “<”: 有符号/无符号不匹配
+C:\Users\ry1yn\source\repos\15PB\Snake\func.cpp(446,21): warning C4838:  从“int”转换到“SHORT”需要收缩转换
+C:\Users\ry1yn\source\repos\15PB\Snake\func.cpp(446,25): warning C4838:  从“int”转换到“SHORT”需要收缩转换
   snake.cpp
-C:\Users\ry1yn\source\repos\15PB\Snake\func.cpp(450,20): warning C4018:  “<”: 有符号/无符号不匹配
-C:\Users\ry1yn\source\repos\15PB\Snake\snake.cpp(266,20): warning C4018:  “<”: 有符号/无符号不匹配
+C:\Users\ry1yn\source\repos\15PB\Snake\func.cpp(478,20): warning C4018:  “<”: 有符号/无符号不匹配
+C:\Users\ry1yn\source\repos\15PB\Snake\snake.cpp(265,20): warning C4018:  “<”: 有符号/无符号不匹配
   正在生成代码...
-C:\Users\ry1yn\source\repos\15PB\Snake\snake.cpp(303,20): warning C4018:  “<”: 有符号/无符号不匹配
+C:\Users\ry1yn\source\repos\15PB\Snake\snake.cpp(302,20): warning C4018:  “<”: 有符号/无符号不匹配
   Snake.vcxproj -> C:\Users\ry1yn\source\repos\15PB\Debug\Snake.exe

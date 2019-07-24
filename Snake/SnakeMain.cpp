@@ -45,38 +45,46 @@ int main()
 	// 2. 用户想干嘛？
 	int op = HandleSelect();
 	//2.1 若开启新游戏，则各对象有参实例化
-	if (op == 1)
+	if (op == 新游戏)
 	{
 		psnake = new CSnake(UP);//方向为UP
+
 		int oop = HandleSelectMap();
-		if (oop == 1)//若是选择自定义的地图
-		{
-			pbarrier = new CBarrier;
-			LoadMap(*pbarrier);
-		}
-		else//系统默认地图，可选择难度
+		if (oop == 系统默认)//若是选择自定义的地图
 		{
 			HandleSelectLevel();
 			pbarrier = new CBarrier(psnake->m_SnakeBody, g_LevelBarrsize);//默认为20个，也可自定义
 		}
+		else if(oop == 玩家提供)//系统默认地图，可选择难度
+		{
+			//SaveMap();
+			//pbarrier = new CBarrier;//新建地图后，马上就用
+			//LoadMap(*pbarrier);
+
+			int ooop = HandleSelectMap2();
+			if (ooop == 新建地图)
+			{
+				SaveMap();
+				pbarrier = new CBarrier;//新建地图后，马上就用
+				LoadMap(*pbarrier);
+			}
+			else if(ooop == 已有地图)
+			{
+				pbarrier = new CBarrier;//上次建的旧地图
+				LoadMap(*pbarrier);
+			}
+		}
+
 		pfood = new CFood(psnake->m_SnakeBody, pbarrier->m_BarrArr);
 	}
-	//2.2 若读档，从文件读取，则各对象无参实例化，以接受数据
-	else if (op == 2)
+	else if (op == 读取游戏)
 	{
 		psnake = new CSnake;
 		pbarrier = new CBarrier;
 		pfood = new CFood;
 		LoadGame(*psnake, *pbarrier, *pfood);
 	}
-	else if (op == 3)
-	{
-		SaveMap();
-		return 0;
-		//DrawMouse();
-	}
-	// 2.3 退出游戏
-	else if (op == 0)
+	else if (op == 退出游戏)
 	{
 		return 0;
 	}

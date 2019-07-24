@@ -14,6 +14,16 @@
 #define 边界 2
 #define 蛇 3
 
+#define 新游戏 1
+#define 读取游戏 2
+#define 退出游戏 3
+
+#define 系统默认 1
+#define 玩家提供 2
+
+#define 新建地图 1
+#define 已有地图 2
+
 //全局变量
 extern int dir[4][2];
 extern int g_Speed;//速度，仅作显示用，g_Speed = 5 + (300 - g_SleepTime) / 25;

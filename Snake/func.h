@@ -33,4 +33,8 @@ void LoadMap(CBarrier& barrier);
 
 void PlaySnd();
 //void PlayGame(CSnake& snake, CBarrier& barrier, CFood& food);
+int  HandleSelectMap2();
 
+void SetCursorState(bool b);
+
+//vector<COORD> CustomizeMap();
