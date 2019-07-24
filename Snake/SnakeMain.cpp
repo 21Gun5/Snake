@@ -72,6 +72,7 @@ int main()
 	else if (op == 3)
 	{
 		SaveMap();
+		return 0;
 		//DrawMouse();
 	}
 	// 2.3 退出游戏
@@ -88,20 +89,21 @@ int main()
 	while (g_isRunning)
 	{
 		// 4.1 打印游戏信息、食物、障碍物
-		DrawGameInfo(psnake->GetSnakeSize(), pbarrier->GetBarrSize());	//打印分数等信息
+		DrawGameInfo(psnake->GetSnakeSize(), pbarrier->GetBarrSize(),psnake->m_Blood);	//打印分数等信息
 		pfood->DrawFood();					//打印食物
 		pbarrier->DrawBarr();//打印障碍物
 
 		// 4.2 让蛇移动并将其打印
 		psnake->ClearSnake();					//清理蛇尾
 		psnake->IsEatenFood(*pfood, pbarrier->m_BarrArr);			//是否吃到食物
-		psnake->MoveSnake(*psnake,*pbarrier,*pfood);					//让蛇跑起来
+		psnake->MoveSnake(*psnake, *pbarrier, *pfood);					//让蛇跑起来
 		psnake->DrawSanke();					//画蛇
 
 		// 4.3 判断是否存活
 		if (!psnake->IsAlive(pbarrier->m_BarrArr))				//是否活着
 		{
 			GameOver(psnake->GetSnakeSize());
+			
 			break;
 		}
 		// 4.4 控制游戏速度

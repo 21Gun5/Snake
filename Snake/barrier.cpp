@@ -8,10 +8,10 @@
 using namespace std;
 
 //无参构造，读取文件时，对象接收者为空
-CBarrier::CBarrier(){}
+CBarrier::CBarrier() {}
 
 //有参构造
-CBarrier::CBarrier(vector<COORD>& snaBody,int size):m_size(size)
+CBarrier::CBarrier(vector<COORD>& snaBody, int size) :m_size(size)
 {
 	COORD barr;
 	for (int i = 0; i < m_size; i++)
@@ -28,7 +28,7 @@ CBarrier::CBarrier(vector<COORD>& snaBody,int size):m_size(size)
 				barr.X = rand() % (MAP_X_WALL / 2 - 2);
 				barr.Y = rand() % (MAP_Y - 2) + 1;
 			}
-			
+
 		}
 
 		m_BarrArr.push_back(barr);

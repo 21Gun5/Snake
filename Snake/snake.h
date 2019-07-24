@@ -10,6 +10,7 @@ public:
 	COORD m_SnakeTail;			//蛇尾，读取时，蛇尾少了两次，要加一个补上
 	int m_Dir;					//运动方向
 	bool m_IsAlive;				//是否存活
+	int m_Blood;//默认三条命
 
 	CSnake();//构造函数
 	CSnake(int dir);

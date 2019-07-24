@@ -9,7 +9,7 @@
 using namespace std;
 
 //无参构造，读取文件时，对象接收者为空
-CFood::CFood(){}
+CFood::CFood() {}
 
 //构造函数（引用传参，可改实参
 CFood::CFood(vector<COORD>& snaBody, vector<COORD>& barrArr)//传入蛇身以验证食物是否出现在蛇身
@@ -63,4 +63,3 @@ COORD CFood::GetFoodPos()
 {
 	return m_FoodPos;
 }
-

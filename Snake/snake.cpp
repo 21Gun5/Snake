@@ -9,10 +9,10 @@
 using namespace std;
 
 //无参构造，读取文件时，对象接收者为空
-CSnake::CSnake(){}
+CSnake::CSnake() {}
 
 //有参构造
-CSnake::CSnake(int dir) :m_Dir(dir), m_IsAlive(true)
+CSnake::CSnake(int dir) :m_Dir(dir), m_IsAlive(true),m_Blood(3)//
 {
 	COORD snakeHead;
 	//snakeHead.X = MAP_X / 2 - 15;
@@ -73,7 +73,7 @@ void CSnake::ListenKeyBoard(CSnake& snake, CBarrier& barrier, CFood& food)
 
 		case 'q':
 		{	//case里定义变量要加大括号
-
+			mciSendString("pause bgm", NULL, 0, NULL);//暂停bgm
 			setColor(12, 0);
 			gotoxy(MAP_X_WALL + 2, 1);
 			cout << "       " << endl;//暂停的状态标识
@@ -82,20 +82,22 @@ void CSnake::ListenKeyBoard(CSnake& snake, CBarrier& barrier, CFood& food)
 			gotoxy(MAP_X_WALL + 2, 2);
 			cout << "1. 回到游戏" << endl;
 			gotoxy(MAP_X_WALL + 2, 3);
-			cout << "2. 保存游戏" << endl;
-			gotoxy(MAP_X_WALL + 2, 4);
-			cout << "3. 退出游戏" << endl;
+			cout << "2. 退出游戏" << endl;
+			//gotoxy(MAP_X_WALL + 2, 4);
+			//cout << "3. 退出游戏" << endl;
 
 			char tmp;
 			do
 			{
 				tmp = _getch();	//利用阻塞函数暂停游戏
-			}
-			while (!(tmp == '1' || tmp == '2' || tmp == '3'));//只有123才可，否则一直处于暂停状态，直至123
+			} while (!(tmp == '1' || tmp == '2' || tmp == '3'));//只有123才可，否则一直处于暂停状态，直至123
 
 			switch (tmp)
 			{
 			case '1'://恢复游戏
+			{
+				mciSendString("resume bgm", NULL, 0, NULL);//恢复bgm
+
 				gotoxy(MAP_X_WALL + 2, 1);
 				cout << "RUNNING" << endl;//恢复游戏时，将提示清空
 				gotoxy(MAP_X_WALL + 2, 2);
@@ -105,45 +107,58 @@ void CSnake::ListenKeyBoard(CSnake& snake, CBarrier& barrier, CFood& food)
 				gotoxy(MAP_X_WALL + 2, 4);
 				cout << "           " << endl;
 				break;
-			case '2'://存档
+			}
+
+			case '2'://退出并选择是否存档
 			{
+				//mciSendString("resume bgm", NULL, 0, NULL);//恢复bgm
 				//恢复游戏时，将提示清空
 				gotoxy(MAP_X_WALL + 2, 1);
-				cout << "RUNNING" << endl;
+				cout << "想如何退出?" << endl;
 				gotoxy(MAP_X_WALL + 2, 2);
-				cout << "q: 暂停游戏" << endl;
+				cout << "1. 保存退出" << endl;
 				gotoxy(MAP_X_WALL + 2, 3);
-				cout << "           " << endl;
-				gotoxy(MAP_X_WALL + 2, 4);
-				cout << "           " << endl;
+				cout << "2. 直接退出" << endl;
 
-				SaveGame(snake, barrier, food);
-				break;
+				int op = _getch();
+				if (op == 1)
+				{
+					SaveGame(snake, barrier, food);
+					break;
+				}
+				else
+				{
+					GameOver(this->m_SnakeBody.size() + 1);//分数那是-3的，而蛇跑时会有删除尾巴，+3-1应该为+2，为何+1正确？
+					g_isRunning = false;
+					break;
+				}
+
+
 
 			}
-				
-			case '3'://退出游戏
-			{
-				//恢复游戏时，将提示清空
-				gotoxy(MAP_X_WALL + 2, 1);
-				cout << "     " << endl;//恢复游戏时，将提示清空
-				gotoxy(MAP_X_WALL + 2, 2);
-				cout << "           " << endl;
-				gotoxy(MAP_X_WALL + 2, 3);
-				cout << "           " << endl;
-				gotoxy(MAP_X_WALL + 2, 4);
-				cout << "           " << endl;
 
-				GameOver(this->m_SnakeBody.size() + 1);//分数那是-3的，而蛇跑时会有删除尾巴，+3-1应该为+2，为何+1正确？
-				g_isRunning = false;
-				break;
-			}
+			//case '3'://退出游戏
+			//{
+			//	//恢复游戏时，将提示清空
+			//	gotoxy(MAP_X_WALL + 2, 1);
+			//	cout << "     " << endl;//恢复游戏时，将提示清空
+			//	gotoxy(MAP_X_WALL + 2, 2);
+			//	cout << "           " << endl;
+			//	gotoxy(MAP_X_WALL + 2, 3);
+			//	cout << "           " << endl;
+			//	gotoxy(MAP_X_WALL + 2, 4);
+			//	cout << "           " << endl;
+
+			//	GameOver(this->m_SnakeBody.size() + 1);//分数那是-3的，而蛇跑时会有删除尾巴，+3-1应该为+2，为何+1正确？
+			//	g_isRunning = false;
+			//	break;
+			//}
 			default:
 				break;
 			}
 			break;
 
-			
+
 		}
 
 		//键盘控制速度
@@ -174,7 +189,7 @@ void CSnake::ListenKeyBoard(CSnake& snake, CBarrier& barrier, CFood& food)
 //移动贪吃蛇
 void CSnake::MoveSnake(CSnake& snake, CBarrier& barrier, CFood& food)
 {
-	ListenKeyBoard(snake,barrier,food);//监听键盘
+	ListenKeyBoard(snake, barrier, food);//监听键盘
 	COORD snaHead = m_SnakeBody[0];//蛇头
 	switch (m_Dir)
 	{
@@ -199,27 +214,34 @@ void CSnake::MoveSnake(CSnake& snake, CBarrier& barrier, CFood& food)
 bool CSnake::IsEatenFood(CFood& food, vector<COORD>& barArr)
 {
 	COORD foodPos = food.GetFoodPos();	//食物坐标
-	
+
 	//坐标重合即吃到食物（吃到后则重新生成食物，不删除蛇尾
 	if (m_SnakeBody[HEAD].X == foodPos.X && m_SnakeBody[HEAD].Y == foodPos.Y)
 	{
 		//一个食物五分，5个食物即25分，为一个速度等级
 		g_foodCount++;
-		if (g_foodCount == 5)
+		if (g_foodCount == 5)//每吃五个，速度大一级，并且加条命
 		{
 			g_SleepTime -= 25;
+			m_Blood++;
 			g_foodCount = 0;
 		}
-		//PlaySoundA("conf\\eat.wav", NULL, SND_ASYNC | SND_NODEFAULT);
-		food.GetRandomPos(m_SnakeBody, barArr);
+		//妈的不实现了，只有第一次会播放
+		//mciSendString("open eat.wav alias eat", NULL, 0, NULL);
+		//mciSendString("play eat", NULL, 0, NULL);
+		//system("pause");
+		////char c = _getch();
+		//mciSendString("close eat", NULL, 0, NULL);
+		
 
+		food.GetRandomPos(m_SnakeBody, barArr);
 
 		return true;
 	}
 	else
 	{
 		//没有吃到食物，删除蛇尾
-		m_SnakeTail = *(m_SnakeBody.end()-1);
+		m_SnakeTail = *(m_SnakeBody.end() - 1);
 		m_SnakeBody.erase(m_SnakeBody.end() - 1);
 		return false;
 	}
@@ -234,28 +256,38 @@ bool CSnake::IsAlive(vector<COORD>& barArr)
 		m_SnakeBody[HEAD].Y <= 0 ||
 		m_SnakeBody[HEAD].Y >= MAP_Y - 1)
 	{
-		//PlaySoundA("conf\\duang.wav", NULL, SND_ASYNC | SND_NODEFAULT);
-
-		m_IsAlive = false;
+		//mciSendString("play duang", NULL, 0, NULL);
+		m_Blood-=3;//撞墙一下就死
+		if(m_Blood == 0) 
+			m_IsAlive = false;
 		return m_IsAlive;
 	}
 	//是否撞自己（头和身相撞，蛇身重叠不算）
 	for (int i = 1; i < m_SnakeBody.size(); i++)
 	{
-		//PlaySoundA("conf\\duang.wav", NULL, SND_ASYNC | SND_NODEFAULT);
+		
 		if (m_SnakeBody[i].X == m_SnakeBody[HEAD].X && m_SnakeBody[i].Y == m_SnakeBody[HEAD].Y)
 		{
-			m_IsAlive = false;
+			//mciSendString("play duang", NULL, 0, NULL);
+			m_Blood--;
+			if (m_Blood == 0)
+				m_IsAlive = false;
 			return m_IsAlive;
 		}
 	}
 	//是否撞地图内障碍物
-	for (int i = 0; i < barArr.size(); i++)
+	for(vector<COORD>::iterator it = barArr.begin();it!=barArr.end();it++)
+	//for (int i = 0; i < barArr.size(); i++)
 	{
-		//PlaySoundA("conf\\duang.wav", NULL, SND_ASYNC | SND_NODEFAULT);
-		if (barArr[i].X == m_SnakeBody[HEAD].X && barArr[i].Y == m_SnakeBody[HEAD].Y)
+		
+		if (it->X == m_SnakeBody[HEAD].X && it->Y == m_SnakeBody[HEAD].Y)
 		{
-			m_IsAlive = false;
+			//mciSendString("play duang", NULL, 0, NULL);
+			m_Blood--;
+			//barArr.erase(it);//撞障碍物之后便抹除，算了，别找事了，复习吧
+			if (m_Blood == 0)
+				m_IsAlive = false;
+			
 			return m_IsAlive;
 		}
 	}
@@ -283,7 +315,7 @@ void CSnake::DrawSanke()
 		{
 			cout << "■";
 		}
-		
+
 		//cout << "*";//here
 	}
 

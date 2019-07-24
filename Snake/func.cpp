@@ -9,14 +9,13 @@
 #include "food.h"
 #include "snake.h"
 #include "barrier.h"
-
 using namespace std;
 
 //打印欢迎界面
 void DrawWelcome()
 {
- //      
-	gotoxy(MAP_X / 2 - 25, MAP_Y / 2 -15);
+	//      
+	gotoxy(MAP_X / 2 - 25, MAP_Y / 2 - 15);
 	cout << " .M\"\"\"dgd       db      `7MN.   `7MF'`7MMF' `YMM' `7MM\"\"\"YMM " << endl;
 	gotoxy(MAP_X / 2 - 25, MAP_Y / 2 - 14);
 	cout << ",MI    \"Y      ;MM:       MMN.    M    MM   .M'     MM    `7 " << endl;
@@ -35,11 +34,11 @@ void DrawWelcome()
 	cout << "1. 新游戏" << endl;
 	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 4);
 	cout << "2. 读取游戏" << endl;
-	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 -2);
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 2);
 	cout << "3. 绘制地图" << endl;
 	gotoxy(MAP_X / 2 - 10, MAP_Y / 2);
 	cout << "4. 退出游戏" << endl;
-	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 +2);
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 2);
 	cout << "请输入选择-> ";
 }
 
@@ -48,11 +47,11 @@ void DrawMap()
 {
 	system("cls");//先清屏
 
-	for (int x = 0; x < MAP_X; x+=2)//要x+=2，还是因为x1b，y2b老问题
+	for (int x = 0; x < MAP_X; x += 2)//要x+=2，还是因为x1b，y2b老问题
 	{
 		for (int y = 0; y < MAP_Y; y++)
 		{
-			if (g_MAP[x][y]== 边界)
+			if (g_MAP[x][y] == 边界)
 			{
 				gotoxy(x, y);
 				cout << "※";//占2B
@@ -89,11 +88,15 @@ void DrawMap()
 //游戏结束
 void GameOver(int score)
 {
-	setColor(12, 0);
+	//死了后音乐也关闭，关闭音乐文件，而非仅仅停止
+	mciSendString("close bgm", NULL, 0, NULL);
+	//mciSendString("close eat", NULL, 0, NULL);
+	//mciSendString("close duang", NULL, 0, NULL);
+	//mciSendString("close click", NULL, 0, NULL);
 
+	setColor(12, 0);
 	gotoxy(MAP_X / 2 - 20, MAP_Y / 2 - 5);
 	cout << "GAME OVER! " << endl;
-
 	gotoxy(MAP_X / 2 - 20, MAP_Y / 2 - 3);
 	cout << "Scores: " << score - 3 << endl;
 
@@ -101,7 +104,7 @@ void GameOver(int score)
 }
 
 //打印相关信息
-void DrawGameInfo(int score,int barrSize)
+void DrawGameInfo(int score, int barrSize,int blood)
 {
 	setColor(12, 0);
 	gotoxy(MAP_X_WALL + 2, 1);
@@ -115,11 +118,13 @@ void DrawGameInfo(int score,int barrSize)
 	cout << "  ";
 	gotoxy(MAP_X - 22 + 14, 4);
 	cout << "  ";
-	gotoxy(MAP_X - 22, 6);
-	cout << "当前分数: " << (score - 3)*5 << endl;//-3，原始蛇长为3,*5，吃一个为5分
-	gotoxy(MAP_X - 22, 8);
+	gotoxy(MAP_X - 22, 5);
+	cout << "当前分数: " << (score - 3) * 5 << endl;//-3，原始蛇长为3,*5，吃一个为5分
+	gotoxy(MAP_X - 22, 7);
+	cout << "当前生命: " << blood << endl;//
+	gotoxy(MAP_X - 22, 9);
 	cout << "障碍个数: " << barrSize << endl;//
-	gotoxy(MAP_X - 22, 10);
+	gotoxy(MAP_X - 22, 11);
 	cout << "当前速度: " << g_Speed << endl;//
 
 }
@@ -127,11 +132,11 @@ void DrawGameInfo(int score,int barrSize)
 //打印游戏帮助
 void DrawGameHelp()
 {
-	gotoxy(MAP_X-22+2, 18);
+	gotoxy(MAP_X - 22 + 2, 18);
 	cout << "操作说明：" << endl;
-	gotoxy(MAP_X-22, 20);
+	gotoxy(MAP_X - 22, 20);
 	cout << "W: 上    S: 下" << endl;
-	gotoxy(MAP_X-22, 22);
+	gotoxy(MAP_X - 22, 22);
 	cout << "A: 左    D: 右" << endl;
 	gotoxy(MAP_X - 22, 24);
 	cout << "+:加速  -:减速" << endl;
@@ -142,7 +147,7 @@ void DrawGameHelp()
 //初始化工作
 void GameInit()
 {
-	//设置窗口大小here
+	////设置窗口大小here
 	//char buf[32];
 	//sprintf_s(buf, "mode con cols=%d lines=%d", MAP_X, MAP_Y);
 	//system(buf);
@@ -153,7 +158,7 @@ void GameInit()
 		for (int y = 0; y < MAP_Y; y++)
 		{
 			//地图边界
-			if (x == 0 || x == MAP_X-2  || y == 0 || y == MAP_Y - 1 || x== MAP_X_WALL || (x>MAP_X_WALL && y== MAP_Y/2))//x == MAP_X-2还是xy轴的老问题
+			if (x == 0 || x == MAP_X - 2 || y == 0 || y == MAP_Y - 1 || x == MAP_X_WALL || (x > MAP_X_WALL && y == MAP_Y / 2))//x == MAP_X-2还是xy轴的老问题
 			{
 				g_MAP[x][y] = 边界;
 			}
@@ -166,24 +171,6 @@ void GameInit()
 		}
 	}
 
-	////设置地图
-	//for (int x = 0; x < MAP_X; x++)
-	//{
-	//	for (int y = 0; y < MAP_Y; y++)
-	//	{
-	//		//地图边界
-	//		if (x == 0 || x == MAP_X  || y == 0 || y == MAP_Y - 1 || x== MAP_X_WALL || (x>MAP_X_WALL&& x<MAP_X && y== MAP_Y/2))//x == MAP_X-2还是xy轴的老问题
-	//		{
-	//			g_MAP[x][y] = 边界;
-	//		}
-	//		//地图中的障碍物
-	//		else
-	//		{
-	//			g_MAP[x][y] = 空地;
-	//		}
-	//	}
-	//}
-
 	//隐藏光标
 	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_CURSOR_INFO CursorInfo;
@@ -194,22 +181,15 @@ void GameInit()
 	//初始化随机数种子
 	srand((unsigned int)time(0));
 
-	//播放BGM
-	//while (true)//循环播放
-	//{
-	//	PlaySoundA("conf\\BGM.wav", NULL, SND_ASYNC | SND_NODEFAULT);
-	//}
-
-	//先别播，烦人
-	//PlaySoundA("conf\\BGM.wav", NULL, SND_ASYNC | SND_NODEFAULT);
-		
+	//播放背景音乐（可循环
+	PlaySnd();
 }
 
 //移动光标（打印食物、蛇、障碍物
 void gotoxy4s(int x, int y)
 {
 	COORD cur;//系统提供的坐标结构体
-	cur.X = x*2;//here上下与左右速度不匹配
+	cur.X = x * 2;//here上下与左右速度不匹配
 	//cur.X = x;
 	cur.Y = y;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cur);
@@ -259,6 +239,8 @@ void SaveGame(CSnake& snake, CBarrier& barrier, CFood& food)
 	//打开文件
 	FILE* pFile = NULL;
 	errno_t err = fopen_s(&pFile, "conf\\game.i", "wb");
+	//写入当前生命值
+	fwrite(&snake.m_Blood, sizeof(int), 1, pFile);
 	//写入当前睡眠时间，以保证速度在读取时也不变
 	fwrite(&g_SleepTime, sizeof(int), 1, pFile);
 	//写入障碍物数量和蛇的数量
@@ -280,9 +262,11 @@ void SaveGame(CSnake& snake, CBarrier& barrier, CFood& food)
 	fwrite(&snake.m_SnakeTail, sizeof(COORD), 1, pFile);//要把蛇尾也写入，因为读取的蛇，蛇尾会少两次，经过两次iseat函数，故在故在读取时，也要将蛇尾pushback进去，以弥补少的那一个（一般少一个，而读取的蛇少两个
 	fwrite(&snake.m_Dir, sizeof(int), 1, pFile);
 	fwrite(&snake.m_IsAlive, sizeof(bool), 1, pFile);
-	
+
 	//关闭文件
 	fclose(pFile);
+
+
 
 }
 
@@ -315,6 +299,8 @@ void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food)
 	FILE* pFile = NULL;
 	errno_t err = fopen_s(&pFile, "conf\\game.i", "rb");
 
+	//读取生命值 
+	fread(&snake.m_Blood, sizeof(int), 1, pFile);
 	//读取当前睡眠时间，以保证速度在读取时也不变
 	fread(&g_SleepTime, sizeof(int), 1, pFile);
 	//写入障碍物数量和蛇的数量
@@ -322,7 +308,7 @@ void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food)
 	fread(&g_BarCount, sizeof(int), 1, pFile);
 	//读取障碍物
 	COORD tmp;
-	for (int i = 0; i <g_BarCount; i++)
+	for (int i = 0; i < g_BarCount; i++)
 	{
 		fread(&tmp, sizeof(COORD), 1, pFile);
 		barrier.m_BarrArr.push_back(tmp);
@@ -358,7 +344,6 @@ void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food)
 
 }
 
-
 //自定义地图
 void SaveMap()
 {
@@ -381,11 +366,11 @@ void SaveMap()
 	SetConsoleMode(hInput, ENABLE_MOUSE_INPUT);
 
 	vector<COORD> BarrTmp;//障碍物数组
-	int barrTmpSize  = 0;
+	int barrTmpSize = 0;
 
 	while (true)
 	{
-		ReadConsoleInput(hInput,&ir,1,&dwCount);
+		ReadConsoleInput(hInput, &ir, 1, &dwCount);
 		if (ir.EventType == MOUSE_EVENT)
 		{
 			if (ir.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
@@ -397,7 +382,7 @@ void SaveMap()
 					//barrTmpSize++;
 
 					g_BarrMAP[pos.X][pos.Y] = 1;
-					gotoxy4s(pos.X/2, pos.Y);//在这/2真是妙的一匹，5/2*2=4，保证这x方向占两个单位的字符，x只能是偶数，这样能减少出错，妙！
+					gotoxy4s(pos.X / 2, pos.Y);//在这/2真是妙的一匹，5/2*2=4，保证这x方向占两个单位的字符，x只能是偶数，这样能减少出错，妙！
 					cout << "※";
 				}
 			}
@@ -419,14 +404,14 @@ void SaveMap()
 					//}
 
 					g_BarrMAP[pos.X][pos.Y] = 0;
-					gotoxy4s(pos.X/2, pos.Y);
+					gotoxy4s(pos.X / 2, pos.Y);
 					cout << "  ";
-					
-				}	
+
+				}
 			}
 			if (ir.Event.MouseEvent.dwEventFlags == DOUBLE_CLICK)
 			{
-				COORD pos = ir.Event.MouseEvent.dwMousePosition; 
+				COORD pos = ir.Event.MouseEvent.dwMousePosition;
 				if (!(pos.X > 0 && pos.X < MAP_X_WALL && pos.Y >0 && pos.Y < MAP_Y))
 				{
 					//地图外双击才退出，避免与左键单击创建障碍混淆
@@ -451,7 +436,7 @@ void SaveMap()
 				*/
 				int t = i / 2;//5/2=2
 				t = t * 2;//2*2=4，妙啊！！！
-				COORD tmp = { t/2,j };//，因为打印的时候还要*2，故再除二
+				COORD tmp = { t / 2,j };//，因为打印的时候还要*2，故再除二
 				BarrTmp.push_back(tmp);
 				barrTmpSize++;
 			}
@@ -532,7 +517,7 @@ int HandleSelect()
 int HandleSelectMap()
 {
 	system("cls");
-	
+
 	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 6);
 	cout << "请选择地图：" << endl;
 	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 4);
@@ -545,7 +530,7 @@ int HandleSelectMap()
 	int rres = 0;
 	//char cch = getchar();//需要回车来确定，且输入可见
 	char cch = _getch();
-	
+
 	switch (cch)
 	{
 	case '1'://系统默认
@@ -577,7 +562,7 @@ void HandleSelectLevel()
 	cout << "2. 一般" << endl;
 	gotoxy(MAP_X / 2 - 10, MAP_Y / 2);
 	cout << "3. 困难" << endl;
-	gotoxy(MAP_X / 2 - 10, MAP_Y / 2+2);
+	gotoxy(MAP_X / 2 - 10, MAP_Y / 2 + 2);
 	cout << "请输入选择-> ";
 
 	char cch = _getch();
@@ -598,151 +583,23 @@ void HandleSelectLevel()
 	}
 }
 
+//播放背景音乐（可循环)
+void PlaySnd()
+{
+	/*
+	打开游戏播放，蛇死亡停止
+	暂停时停止，恢复时播放
+	*/
+
+	// 打开音频文件（死亡时关闭
+	mciSendString("open conf/BGM.mp3 alias bgm", NULL, 0, NULL);//取的别名不可大写
+	// 循环播放,循环播放适用于.mp3格式,但不适用.wav格式
+	mciSendString("play bgm repeat", NULL, 0, NULL);
+}
+
 ////游戏主循环
 //void PlayGame(CSnake & snake,CBarrier & barrier, CFood & food)
 //{
 //
 //}
-
-////设置游戏难度等级
-//void SetLevel()
-//{
-//
-//}
-
-//void PlaySnd(string sound)
-//{
-//	//播放BGM
-//	//conf\\BGM.wav
-//	sound = "conf\\BGM.wav";
-//	PlaySoundA("conf\\BGM.wav", NULL, SND_ASYNC | SND_NODEFAULT);
-//}
-
-///////////////////////////////////////////////////////////////////////////////////
-
-//1. 在屏幕任何位置输出字符串
-//void WriteChar(int x, int y, const char* p, int color = 0)
-//{
-//	HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);//获取标准输出句柄（在这是屏幕
-//	COORD pos = { x, y };//坐标结构体
-//	SetConsoleCursorPosition(hOutput, pos);//将光标移动到 屏幕上指定坐标位置
-//	printf(p);//在指定位置打印
-//}
-
-//// 2. 受控制的自由移动的点
-//void moveSth()
-//{
-//	//光标不可见
-//	HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);//获取屏幕句柄（句柄就理解为指向某对象的指针，此句柄就代表某对象）
-//	CONSOLE_CURSOR_INFO cci;//控制台光标对象
-//	cci.dwSize = sizeof(cci);//光标大小？？干嘛用？
-//	cci.bVisible = FALSE;//设置光标状态为不可见
-//	SetConsoleCursorInfo(hOutput, &cci);//将光标状态应用到屏幕上
-//
-//	int x = 10;
-//	int y = 20;
-//	int nDir = 0;
-//	char ch = 0;
-//	while (true)
-//	{
-//		int Oldx = x;
-//		int Oldy = y;
-//		WriteChar(x, y, "☆");//指定位置打印星星
-//		if (_kbhit() == 1)//非阻塞函数，不同于scanf，会一直阻塞等待用户输入
-//		{
-//			ch = _getch();//无回显的获取字符
-//		}
-//		else
-//		{
-//			ch = 0;
-//		}
-//		switch (ch)//通过按键来控制方向，再通过方向来控制位置变化（不同于上面，直接通过按键来控制位置
-//		{
-//		case 'w':
-//			nDir = 0;
-//			break;
-//		case 's':
-//			nDir = 1;
-//			break;
-//		case 'a':
-//			nDir = 2;
-//			break;
-//		case 'd':
-//			nDir = 3;
-//			break;
-//		default:
-//			break;
-//		}
-//
-//		switch (nDir)//再通过方向来控制位置变化（方向是中间人角色）
-//		{
-//		case 0:
-//			y--;
-//			break;
-//		case 1:
-//			y++;
-//			break;
-//		case 2:
-//			x--;
-//			break;
-//		case 3:
-//			x++;
-//			break;
-//		default:
-//			break;
-//		}
-//		Sleep(100);//控制速度
-//		//旧位置打印空，新位置打印字符，实现移动的效果
-//		//尽量避免system("cls")清屏这种方式，会使屏幕闪
-//		WriteChar(Oldx, Oldy, " ");//老位置
-//		WriteChar(x, y, "☆");
-//	}
-//}
-
-//// 3. 鼠标画图
-//void DrawMouse()
-//{
-//	system("cls");
-//	HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
-//	INPUT_RECORD ir = {};
-//	DWORD dwCount = 0;
-//
-//	SetConsoleMode(hInput, ENABLE_MOUSE_INPUT);
-//	while (true)
-//	{
-//		
-//		ReadConsoleInput(
-//			hInput,  
-//			&ir,     
-//			1,       
-//			&dwCount 
-//		);
-//		if (ir.EventType == MOUSE_EVENT)
-//		{
-//			if (ir.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
-//			{
-//				COORD pos = ir.Event.MouseEvent.dwMousePosition;//获取按键的位置
-//				//因为上下是一个字符，左右是半个字符，故x坐标要/2，使得上下与左右的速度一致（为何是x/2？）
-//				gotoxy4s(pos.X / 2, pos.Y);
-//				cout << "※";
-//
-//			}
-//			if (ir.Event.MouseEvent.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
-//			{
-//				COORD pos = ir.Event.MouseEvent.dwMousePosition;
-//				gotoxy4s(pos.X / 2, pos.Y);
-//				cout << "  ";
-//			}
-//
-//		}
-//	}
-//
-//}
-
-// 4. 移动蛇
-// 5. 吃食物，变长
-// 6. 二维数组存地图，即要解决的规划问题
-
-
-
 
