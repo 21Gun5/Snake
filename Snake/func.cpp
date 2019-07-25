@@ -6,12 +6,12 @@
 #include <time.h>
 #include <iomanip>
 #include <conio.h>
+
 #include "data.h"
 #include "func.h"
 #include "food.h"
 #include "snake.h"
 #include "barrier.h"
-
 using namespace std;
 
 void DrawWelcome()
@@ -21,7 +21,7 @@ void DrawWelcome()
 	2. 包括图案和提示信息
 	*/
 
-	 //打印图案
+	//打印图案
 	Gotoxy(MAP_X / 2 - 25, MAP_Y / 2 - 15);
 	cout << " .M\"\"\"dgd       db      `7MN.   `7MF'`7MMF' `YMM' `7MM\"\"\"YMM " << endl;
 	Gotoxy(MAP_X / 2 - 25, MAP_Y / 2 - 14);
@@ -44,11 +44,10 @@ void DrawWelcome()
 	cout << "2. 读取游戏" << endl;
 	Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 2);
 	cout << "3. 退出游戏" << endl;
-	Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 -0);
+	Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 0);
 	cout << "请输入选择-> ";
 	SetCursorState(true);			//用户输入时，光标可见
 }
-
 void DrawMapBorder()
 {
 	/*
@@ -68,29 +67,19 @@ void DrawMapBorder()
 		}
 	}
 }
-
-void GameOver(int score)
+void DrawGameHelp()
 {
-	/*
-	1. 游戏结束后的扫尾工作
-	2. 关闭bgm文件
-	3. 游戏结束的提示信息及最终分数
-	*/
-
-	//关闭音乐文件
-	mciSendString("close bgm", NULL, 0, NULL);	//close关闭而非stop停止
-	
-	//提示信息
-	setColor(12, 0);
-	Gotoxy(MAP_X / 2 - 20, MAP_Y / 2 - 5);
-	cout << "GAME OVER! " << endl;
-	Gotoxy(MAP_X / 2 - 20, MAP_Y / 2 - 3);
-	cout << "Scores: " << score - 3 << endl;	//蛇身初始3节
-
-	return;
+	//打印游戏帮助
+	Gotoxy(MAP_X - 22 + 2, 18);
+	cout << "操作说明：" << endl;
+	Gotoxy(MAP_X - 22, 20);
+	cout << "W: 上    S: 下" << endl;
+	Gotoxy(MAP_X - 22, 22);
+	cout << "A: 左    D: 右" << endl;
+	Gotoxy(MAP_X - 22, 24);
+	cout << "+:加速  -:减速" << endl;
 }
-
-void DrawGameInfo(int score, int barrSize,int blood)
+void DrawGameInfo(int score, int barrSize, int blood)
 {
 	/*
 	1. 运行状态
@@ -118,34 +107,7 @@ void DrawGameInfo(int score, int barrSize,int blood)
 	Gotoxy(MAP_X - 22, 9);
 	cout << "障碍个数: " << setw(2) << barrSize << endl;
 	Gotoxy(MAP_X - 22, 11);
-	cout << "当前速度: " << setw(2)<< g_Speed << endl;			//用setw，避免10到9，0仍在
-}
-
-void DrawGameHelp()
-{
-	//打印游戏帮助
-	Gotoxy(MAP_X - 22 + 2, 18);
-	cout << "操作说明：" << endl;
-	Gotoxy(MAP_X - 22, 20);
-	cout << "W: 上    S: 下" << endl;
-	Gotoxy(MAP_X - 22, 22);
-	cout << "A: 左    D: 右" << endl;
-	Gotoxy(MAP_X - 22, 24);
-	cout << "+:加速  -:减速" << endl;
-}
-
-void SetCursorState(bool b)
-{
-	/*
-	1. 设置光标状态
-	2. 用户输入前显示坐标，输入后隐藏
-	*/
-
-	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_CURSOR_INFO CursorInfo;
-	GetConsoleCursorInfo(handle, &CursorInfo);	//获取控制台光标信息
-	CursorInfo.bVisible = b;					//显示/隐藏控制台光标
-	SetConsoleCursorInfo(handle, &CursorInfo);	//设置控制台光标状态
+	cout << "当前速度: " << setw(2) << g_Speed << endl;			//用setw，避免10到9，0仍在
 }
 
 void GameInit()
@@ -161,8 +123,8 @@ void GameInit()
 		for (int y = 0; y < MAP_Y; y++)
 		{
 			//地图边界
-			if (x == 0 || x == MAP_X - 2 || x == MAP_X_WALL||	//三竖边
-				y == 0 || y == MAP_Y - 1  ||					//两横边
+			if (x == 0 || x == MAP_X - 2 || x == MAP_X_WALL ||	//三竖边
+				y == 0 || y == MAP_Y - 1 ||					//两横边
 				(x > MAP_X_WALL && y == MAP_Y / 2))				//帮助信息与游戏信息分割线
 			{
 				g_MAP[x][y] = 边界;
@@ -179,7 +141,52 @@ void GameInit()
 	//播放背景音乐（可循环
 	PlayBGM();
 }
+void GameOver(int score)
+{
+	/*
+	1. 游戏结束后的扫尾工作
+	2. 关闭bgm文件
+	3. 游戏结束的提示信息及最终分数
+	*/
 
+	//关闭音乐文件
+	mciSendString("close bgm", NULL, 0, NULL);	//close关闭而非stop停止
+
+	//提示信息
+	setColor(12, 0);
+	Gotoxy(MAP_X / 2 - 20, MAP_Y / 2 - 5);
+	cout << "GAME OVER! " << endl;
+	Gotoxy(MAP_X / 2 - 20, MAP_Y / 2 - 3);
+	cout << "Scores: " << score - 3 << endl;	//蛇身初始3节
+
+	return;
+}
+
+void PlayBGM()
+{
+	/*
+	1. 播放背景音乐（可循环)
+	2. 打开游戏播放，蛇死亡停止
+	3. 暂停时停止，恢复时播放
+	*/
+
+	// 打开音频文件（死亡时关闭
+	mciSendString("open conf/BGM.mp3 alias bgm", NULL, 0, NULL);//别名不可大写
+	mciSendString("play bgm repeat", NULL, 0, NULL);			// 循环播放,适用于.mp3格式
+}
+void SetCursorState(bool b)
+{
+	/*
+	1. 设置光标状态
+	2. 用户输入前显示坐标，输入后隐藏
+	*/
+
+	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO CursorInfo;
+	GetConsoleCursorInfo(handle, &CursorInfo);	//获取控制台光标信息
+	CursorInfo.bVisible = b;					//显示/隐藏控制台光标
+	SetConsoleCursorInfo(handle, &CursorInfo);	//设置控制台光标状态
+}
 void GotoxyFor2(int x, int y)
 {
 	/*
@@ -193,7 +200,6 @@ void GotoxyFor2(int x, int y)
 	cur.Y = y;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cur);
 }
-
 void Gotoxy(int x, int y)
 {
 	/*
@@ -206,7 +212,6 @@ void Gotoxy(int x, int y)
 	cur.Y = y;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cur);
 }
-
 void setColor(unsigned short ForeColor, unsigned short BackGroundColor)
 {
 	/*
@@ -217,172 +222,13 @@ void setColor(unsigned short ForeColor, unsigned short BackGroundColor)
 	SetConsoleTextAttribute(handle, ForeColor + BackGroundColor * 0x10);//设置颜色
 }
 
-
-
-//存档
-void SaveGame(CSnake& snake, CBarrier& barrier, CFood& food)
-{
-	//提示信息
-
-	string str;
-	system("cls");
-	setColor(12, 0);
-	Gotoxy(MAP_X - 24, 12);
-	cout << "请输入存档名字" << endl;
-	Gotoxy(MAP_X - 24, 14);
-	cin >> str;
-	setColor(7, 0);
-
-	string str1 = str + ".i";
-	string str2 = "conf\\game\\" + str1;
-	const char* filename = str2.c_str();
-
-
-
-	g_SnaCount = snake.m_SnakeBody.size();//为2
-	g_BarCount = barrier.m_size;//15
-	//打开文件
-	FILE* pFile = NULL;
-
-	errno_t err = fopen_s(&pFile,filename, "wb");
-	//errno_t err = fopen_s(&pFile, "conf\\game\\game.i", "wb");
-	//写入当前生命值
-	fwrite(&snake.m_Blood, sizeof(int), 1, pFile);
-	//写入当前睡眠时间，以保证速度在读取时也不变
-	fwrite(&g_SleepTime, sizeof(int), 1, pFile);
-	//写入障碍物数量和蛇的数量
-	fwrite(&g_SnaCount, sizeof(int), 1, pFile);
-	fwrite(&g_BarCount, sizeof(int), 1, pFile);
-	//写入障碍物
-	for (int i = 0; i < barrier.m_size; i++)
-	{
-		fwrite(&barrier.m_BarrArr[i], sizeof(COORD), 1, pFile);
-	}
-	fwrite(&barrier.m_size, sizeof(int), 1, pFile);
-	//写入食物
-	fwrite(&food.m_FoodPos, sizeof(COORD), 1, pFile);
-	//写入蛇
-	for (int i = 0; i < snake.m_SnakeBody.size(); i++)
-	{
-		fwrite(&snake.m_SnakeBody[i], sizeof(COORD), 1, pFile);
-	}
-	fwrite(&snake.m_SnakeTail, sizeof(COORD), 1, pFile);//要把蛇尾也写入，因为读取的蛇，蛇尾会少两次，经过两次iseat函数，故在故在读取时，也要将蛇尾pushback进去，以弥补少的那一个（一般少一个，而读取的蛇少两个
-	fwrite(&snake.m_Dir, sizeof(int), 1, pFile);
-	fwrite(&snake.m_IsAlive, sizeof(bool), 1, pFile);
-
-	//关闭文件
-	fclose(pFile);
-
-	
-
-
-
-}
-
-//读档
-void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food,string str)
-{
-
-	str = "conf\\game\\" + str;
-	const char* filename = str.c_str();//here
-
-
-
-	//打开文件
-	FILE* pFile = NULL;
-	errno_t err = fopen_s(&pFile, filename, "rb");
-	//errno_t err = fopen_s(&pFile, "conf\\game\\game.i", "rb");
-
-	//读取生命值 
-	fread(&snake.m_Blood, sizeof(int), 1, pFile);
-	//读取当前睡眠时间，以保证速度在读取时也不变
-	fread(&g_SleepTime, sizeof(int), 1, pFile);
-	//写入障碍物数量和蛇的数量
-	fread(&g_SnaCount, sizeof(int), 1, pFile);
-	fread(&g_BarCount, sizeof(int), 1, pFile);
-	//读取障碍物
-	COORD tmp;
-	for (int i = 0; i < g_BarCount; i++)
-	{
-		fread(&tmp, sizeof(COORD), 1, pFile);
-		barrier.m_BarrArr.push_back(tmp);
-	}
-	fread(&barrier.m_size, sizeof(int), 1, pFile);
-	//读取食物
-	fread(&food.m_FoodPos, sizeof(COORD), 1, pFile);
-	//读取蛇
-	COORD tmp2;
-	for (int i = 0; i < g_SnaCount; i++)
-	{
-		fread(&tmp2, sizeof(COORD), 1, pFile);
-		snake.m_SnakeBody.push_back(tmp2);
-	}
-	fread(&snake.m_SnakeTail, sizeof(COORD), 1, pFile);
-	snake.m_SnakeBody.push_back(snake.m_SnakeTail);//少了两次，要加一个进去以弥补
-	fread(&snake.m_Dir, sizeof(int), 1, pFile);//在这报错
-	fread(&snake.m_IsAlive, sizeof(bool), 1, pFile);//错
-
-	//关闭文件
-	fclose(pFile);
-
-
-}
-
-//here
-string ShowGames()
-{
-	//目标文件夹路径
-	std::string inPath = "conf/game/*.i";//遍历文件夹下的所有.jpg文件
-	//用于查找的句柄
-	long handle;
-	_finddata_t fileinfo;
-	//第一次查找
-	handle = _findfirst(inPath.c_str(), &fileinfo);
-	if (handle == -1)
-		return 0;
-	do
-	{
-		g_Maps.push_back(fileinfo.name);
-		//找到的文件的文件名
-		//cout << fileinfo.name;
-		//printf("%s\n", fileinfo.name);
-
-	} while (!_findnext(handle, &fileinfo));
-
-	_findclose(handle);
-
-
-	system("cls");
-	Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 8);
-	cout << "请选择存档" << endl;
-
-	int i = 0;
-	for (; i < g_Maps.size(); i++)
-	{
-		//提示信息
-		Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 6 + i);
-		cout << i + 1 << ". " << g_Maps[i] << endl;
-		//printf("%d. %s\n", i+1, g_MAP[i]);
-		//cout << g_Maps[i].substr() << endl;
-	}
-	Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 6 + i);
-	cout << "请输入选择-> ";
-
-	int input = _getch() - 48;
-
-	return g_Maps[input - 1];
-
-}
-
-
-
 int SelectAction()
 {
 	/*
 	1. 选择新游戏 or 读取游戏 or 退出游戏
 	*/
 
-	int input = _getch()-48;	//无回显接收；-48保证在0-9，而非ASCII
+	int input = _getch() - 48;	//无回显接收；-48保证在0-9，而非ASCII
 	SetCursorState(false);	//输入完隐藏光标
 
 	switch (input)
@@ -410,7 +256,6 @@ int SelectAction()
 	}
 	return input;
 }
-
 int SelectWhoMap()
 {
 	/*
@@ -429,12 +274,35 @@ int SelectWhoMap()
 	cout << "请输入选择-> ";
 	SetCursorState(true);		//用户输入前显示光标
 
-	int input = _getch()-48;	//控制其0-9，而非ASCII
+	int input = _getch() - 48;	//控制其0-9，而非ASCII
 	SetCursorState(false);		//输入结束后隐藏光标
 
 	return input;
 }
+int SelectWhenMap()
+{
+	/*
+	1. 选择新旧地图，只适用于用户自定义地图
+	2. 新建地图 or 之前建的老地图
+	*/
 
+	//提示信息
+	system("cls");
+	Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 6);
+	cout << "地图选择" << endl;
+	Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 4);
+	cout << "1. 新建地图" << endl;
+	Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 2);
+	cout << "2. 已有地图" << endl;
+	Gotoxy(MAP_X / 2 - 10, MAP_Y / 2);
+	cout << "请输入选择-> ";
+	SetCursorState(true);//显示光标
+
+	int input = _getch() - 48;
+	SetCursorState(false);//隐藏光标
+
+	return input;
+}
 void SelectLevel()
 {
 	/*
@@ -456,7 +324,7 @@ void SelectLevel()
 	cout << "请输入选择-> ";
 	SetCursorState(true);		//显示光标
 
-	int input = _getch()-48;	//避免ASCII
+	int input = _getch() - 48;	//避免ASCII
 	SetCursorState(false);		//隐藏光标
 
 	//难度与障碍物数量成正比、与睡眠时间成反比
@@ -479,32 +347,45 @@ void SelectLevel()
 	}
 }
 
-int SelectWhenMap()
+string ShowMaps()
 {
 	/*
-	1. 选择新旧地图，只适用于用户自定义地图
-	2. 新建地图 or 之前建的老地图
+	1. 显示所有地图以供用户选择
+	2. 返回选择的文件名
 	*/
 
-	//提示信息
+	//遍历指定目录下文件名here
+	string inPath = "conf/map/*.i";
+	long handle;							//用于查找的句柄
+	_finddata_t fileinfo;
+	handle = _findfirst(inPath.c_str(), &fileinfo);
+	if (handle == -1)
+		return 0;
+	do
+	{
+		g_Maps.push_back(fileinfo.name);	//将文件名加入数组
+	} while (!_findnext(handle, &fileinfo));
+	_findclose(handle);
+
+	//显示目录
 	system("cls");
-	Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 6);
-	cout << "地图选择" << endl;
-	Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 4);
-	cout << "1. 新建地图" << endl;
-	Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 2);
-	cout << "2. 已有地图" << endl;
-	Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 );
+	Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 8);
+	cout << "请选择地图" << endl;
+
+	int i = 0;								//循环变量在for外定义
+	for (; i < g_Maps.size(); i++)
+	{
+		Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 6 + i);
+		cout << i + 1 << ". " << g_Maps[i] << endl;
+	}
+	Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 6 + i);
 	cout << "请输入选择-> ";
-	SetCursorState(true);//显示光标
 
-	int input = _getch()-48;
-	SetCursorState(false);//隐藏光标
+	int input = _getch() - 48;				//保证0-9而非ASCII
+	string _file = g_Maps[input - 1];		//数字始于1，而下标始于0
 
-	return input;
+	return _file;
 }
-
-//here
 string SetMap()
 {
 	/*
@@ -534,7 +415,7 @@ string SetMap()
 	DWORD dwCount = 0;
 	SetConsoleMode(hInput, ENABLE_MOUSE_INPUT);
 
-	vector<COORD> BarrTmp;//障碍物数组
+	vector<COORD> BarrTmp;	//障碍物数组
 	int barrTmpSize = 0;
 
 	//捕获鼠标事件并反馈给屏幕
@@ -602,26 +483,21 @@ string SetMap()
 
 	//提示信息
 
-	string str;
 	system("cls");
 	setColor(12, 0);
 	Gotoxy(MAP_X - 24, 12);
 	cout << "请输入地图名字" << endl;
 	Gotoxy(MAP_X - 24, 14);
+	string str;
 	cin >> str;
 	setColor(7, 0);
 
-	string str1 = str + ".i";
-	string str2 = "conf\\map\\" + str1;
-	const char* filename = str2.c_str();
+	string _file = str + ".i";				//文件名
+	string filename = "conf\\map\\" + _file;	//带完整路径的文件
 
-
-
-
-	//将数组相关信息写入文件
+	//数据写入文件
 	FILE* pFile = NULL;
-	errno_t err = fopen_s(&pFile, filename, "wb");
-	//errno_t err = fopen_s(&pFile, "conf\\map.i", "wb");
+	errno_t err = fopen_s(&pFile, filename.c_str(), "wb");
 	fwrite(&barrTmpSize, sizeof(int), 1, pFile);//写入障碍物数量
 	for (int i = 0; i < BarrTmp.size(); i++)	//遍历写入障碍物
 	{
@@ -629,23 +505,20 @@ string SetMap()
 	}
 	fclose(pFile);
 
-	return str1;
+	return _file;
 }
-//here
-void LoadMap(CBarrier& barrier,string str)
+void LoadMap(CBarrier& barrier, string str)
 {
 	/*
 	1. 导入用户自定义的地图
 	2. 接受者为障碍物对象
 	*/
-	str = "conf\\map\\" + str;
-	const char* filename = str.c_str();//here
 
+	string filename = "conf\\map\\" + str;
 
 	COORD tmp;
 	FILE* pFile = NULL;
-	errno_t err = fopen_s(&pFile, filename, "rb");//here
-	//errno_t err = fopen_s(&pFile, "conf\\map.i", "rb");
+	errno_t err = fopen_s(&pFile, filename.c_str(), "rb");
 	fread(&barrier.m_size, sizeof(int), 1, pFile);	//读取障碍物数量
 	for (int i = 0; i < barrier.m_size; i++)		//遍历读取障碍物
 	{
@@ -654,61 +527,124 @@ void LoadMap(CBarrier& barrier,string str)
 	}
 	fclose(pFile);
 }
-//here
-string ShowMaps()
+
+void SaveGame(CSnake& snake, CBarrier& barrier, CFood& food)
 {
-	//目标文件夹路径
-	std::string inPath = "conf/map/*.i";//遍历文件夹下的所有.jpg文件
-	//用于查找的句柄
-	long handle;
+	/*
+	1. 游戏存档
+	*/
+
+	//提示信息
+	system("cls");
+	setColor(12, 0);
+	Gotoxy(MAP_X - 24, 12);
+	cout << "请输入存档名字" << endl;
+	Gotoxy(MAP_X - 24, 14);
+	string str;
+	cin >> str;
+	setColor(7, 0);
+
+	string _file = str + ".i";
+	string filename = "conf\\game\\" + _file;
+
+	g_SnaCount = snake.m_SnakeBody.size();
+	g_BarCount = barrier.m_size;
+
+	FILE* pFile = NULL;
+	errno_t err = fopen_s(&pFile, filename.c_str(), "wb");
+
+	fwrite(&snake.m_Blood, sizeof(int), 1, pFile);	//写入当前生命值
+	fwrite(&g_SleepTime, sizeof(int), 1, pFile);	//写入当前睡眠时间，以保证速度在读取时也不变
+	fwrite(&g_SnaCount, sizeof(int), 1, pFile);		//写入障碍物数量
+	fwrite(&g_BarCount, sizeof(int), 1, pFile);		//写入蛇的数量
+	//写入障碍物
+	for (int i = 0; i < barrier.m_size; i++)
+	{
+		fwrite(&barrier.m_BarrArr[i], sizeof(COORD), 1, pFile);
+	}
+	fwrite(&barrier.m_size, sizeof(int), 1, pFile);
+	//写入食物
+	fwrite(&food.m_FoodPos, sizeof(COORD), 1, pFile);
+	//写入蛇
+	for (int i = 0; i < snake.m_SnakeBody.size(); i++)
+	{
+		fwrite(&snake.m_SnakeBody[i], sizeof(COORD), 1, pFile);
+	}
+	fwrite(&snake.m_SnakeTail, sizeof(COORD), 1, pFile);//要把蛇尾也写入，因为读取的蛇，蛇尾会少两次，经过两次iseat函数，故在故在读取时，也要将蛇尾pushback进去，以弥补少的那一个（一般少一个，而读取的蛇少两个
+	fwrite(&snake.m_Dir, sizeof(int), 1, pFile);
+	fwrite(&snake.m_IsAlive, sizeof(bool), 1, pFile);
+
+	fclose(pFile);
+}
+void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food, string str)
+{
+	/*
+	游戏读档
+	*/
+
+	string filename = "conf\\game\\" + str;
+	FILE* pFile = NULL;
+	errno_t err = fopen_s(&pFile, filename.c_str(), "rb");
+
+	fread(&snake.m_Blood, sizeof(int), 1, pFile);//读取生命值 
+	fread(&g_SleepTime, sizeof(int), 1, pFile);//读取当前睡眠时间，以保证速度在读取时也不变
+	fread(&g_SnaCount, sizeof(int), 1, pFile);//写入障碍物数量
+	fread(&g_BarCount, sizeof(int), 1, pFile);//写入蛇的数量
+	//读取障碍物
+	COORD tmp;
+	for (int i = 0; i < g_BarCount; i++)
+	{
+		fread(&tmp, sizeof(COORD), 1, pFile);
+		barrier.m_BarrArr.push_back(tmp);
+	}
+	fread(&barrier.m_size, sizeof(int), 1, pFile);
+	//读取食物
+	fread(&food.m_FoodPos, sizeof(COORD), 1, pFile);
+	//读取蛇
+	COORD tmp2;
+	for (int i = 0; i < g_SnaCount; i++)
+	{
+		fread(&tmp2, sizeof(COORD), 1, pFile);
+		snake.m_SnakeBody.push_back(tmp2);
+	}
+	fread(&snake.m_SnakeTail, sizeof(COORD), 1, pFile);
+	snake.m_SnakeBody.push_back(snake.m_SnakeTail);//少了两次，要加一个进去以弥补
+	fread(&snake.m_Dir, sizeof(int), 1, pFile);//在这报错
+	fread(&snake.m_IsAlive, sizeof(bool), 1, pFile);//错
+
+	fclose(pFile);
+}
+string ShowGames()
+{
+	//遍历指定目录下文件名here
+	std::string inPath = "conf/game/*.i";
+
+	long handle;			//用于查找的句柄
 	_finddata_t fileinfo;
-	//第一次查找
 	handle = _findfirst(inPath.c_str(), &fileinfo);
 	if (handle == -1)
 		return 0;
 	do
 	{
-		g_Maps.push_back(fileinfo.name);
-		//找到的文件的文件名
-		//cout << fileinfo.name;
-		//printf("%s\n", fileinfo.name);
-
+		g_Games.push_back(fileinfo.name);//将文件名加入数组
 	} while (!_findnext(handle, &fileinfo));
 
 	_findclose(handle);
 
-
 	system("cls");
 	Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 8);
-	cout << "请选择地图" << endl;
+	cout << "请选择存档" << endl;
 
 	int i = 0;
-	for (; i < g_Maps.size(); i++)
+	for (; i < g_Games.size(); i++)
 	{
-		//提示信息
 		Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 6 + i);
-		cout << i + 1 << ". " << g_Maps[i] << endl;
-		//printf("%d. %s\n", i+1, g_MAP[i]);
-		//cout << g_Maps[i].substr() << endl;
+		cout << i + 1 << ". " << g_Games[i] << endl;
 	}
 	Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 6 + i);
 	cout << "请输入选择-> ";
 
 	int input = _getch() - 48;
-
-	return g_Maps[input - 1];
-
-}
-
-void PlayBGM()
-{
-	/*
-	1. 播放背景音乐（可循环)
-	2. 打开游戏播放，蛇死亡停止
-	3. 暂停时停止，恢复时播放
-	*/
-
-	// 打开音频文件（死亡时关闭
-	mciSendString("open conf/BGM.mp3 alias bgm", NULL, 0, NULL);//别名不可大写
-	mciSendString("play bgm repeat", NULL, 0, NULL);			// 循环播放,适用于.mp3格式
+	string _file = g_Games[input - 1];
+	return _file;
 }

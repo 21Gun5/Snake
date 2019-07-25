@@ -19,7 +19,6 @@ using namespace std;
 4. 让蛇跑：新加蛇头（尾巴去掉，中间不变，新加蛇头；尾替代头，中间不变，而非后者替代前者，牵涉所有蛇体
 5. 画蛇
 */
-
 /*
 读档时的蛇如何？
 1. 存档时是在movesnake函数中
@@ -63,10 +62,10 @@ int main()
 			// 2.1-新建地图
 			if (whenMap == 新建地图)
 			{
-				string str=SetMap();
+				string _map=SetMap();
 				pbarrier = new CBarrier;//空对象以接收数据
 				//string str = "map.i";
-				LoadMap(*pbarrier,str);
+				LoadMap(*pbarrier, _map);
 			}
 			// 2.2-之前建的旧地图
 			else if(whenMap == 已有地图)//here
@@ -83,13 +82,12 @@ int main()
 	}
 	else if (action == 读取游戏)
 	{
-		string str = ShowGames();
-
+		string _game = ShowGames();
 		//创建空对象，以接受文件数据
 		psnake = new CSnake;
 		pbarrier = new CBarrier;
 		pfood = new CFood;
-		LoadGame(*psnake, *pbarrier, *pfood,str);
+		LoadGame(*psnake, *pbarrier, *pfood, _game);
 	}
 	else if (action == 退出游戏)
 	{

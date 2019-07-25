@@ -1,48 +1,35 @@
 #pragma once
 #include <string>
+#include <vector>
 #include "food.h"
 #include "snake.h"
 #include "barrier.h"
-using std::string;
-#pragma comment(lib,"winmm.lib")//播放BGM
+#pragma comment(lib,"winmm.lib")
+using namespace std;
 
 void DrawWelcome();				//欢迎界面
-void DrawMapBorder();					//打印地图边界
-void GameOver(int score);		//游戏结束
-void DrawGameInfo(int score,int barrSize,int blood);		//打印分数
-void DrawGameHelp();			//打印操作说明
-void GameInit();				//初始化游戏
-void Gotoxy(int x, int y);		//移动光标（地图边界、其他信息用到）
+void DrawMapBorder();			//地图边界
+void DrawGameHelp();			//操作说明
+void DrawGameInfo(int score, int barrSize, int blood);	//分数生命值等
+
+void GameInit();				//游戏开始前的初始化
+void GameOver(int score);		//游戏结束后的扫尾工作
+
+void Gotoxy(int x, int y);		//移动光标（普通一单位字符）
+void GotoxyFor2(int x, int y);	//移动坐标（蛇等两单位字符）
+void SetCursorState(bool b);	//设置光标状态
+void PlayBGM();					//播放背景音乐
 void setColor(unsigned short ForeColor, unsigned short BackGroundColor);//设置颜色
 
-void GotoxyFor2(int x, int y);//移动坐标（蛇、食物、障碍物用到）
+int SelectAction();				//新/读取/退出游戏
+int SelectWhoMap();				//系统/自定义地图
+int SelectWhenMap();			//新建/已有地图
+void SelectLevel();				//设置游戏难度
 
-//void SetLevel();//设置游戏难度等级
+string SetMap();				//自定义地图
+string ShowMaps();				//显示地图供用户选择
+void LoadMap(CBarrier& barrier, string str);//导入地图
 
-int SelectAction();//处理用户输入（新游戏or退出游戏……
-
-int SelectWhoMap();//处理用户输入（选择系统系统or自定义地图
-
-void SelectLevel();//处理用户输入（选择难度
-
+string ShowGames();				//显示存档供用户选择
 void SaveGame(CSnake& snake, CBarrier& barrier, CFood& food);//存档
-
 void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food, string str);//读档
-
-string SetMap();//自定义地图
-
-void LoadMap(CBarrier& barrier,string str);
-
-void PlayBGM();
-//void PlayGame(CSnake& snake, CBarrier& barrier, CFood& food);
-int  SelectWhenMap();
-
-void SetCursorState(bool b);
-
-//void HandleSelect(CSnake* psnake, CBarrier* pbarrier, CFood* pfood);
-
-//vector<COORD> CustomizeMap();
-
-string ShowMaps();//here
-
-string ShowGames();//
