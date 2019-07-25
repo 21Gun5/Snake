@@ -63,15 +63,20 @@ int main()
 			// 2.1-新建地图
 			if (whenMap == 新建地图)
 			{
-				SetMap();
+				string str=SetMap();
 				pbarrier = new CBarrier;//空对象以接收数据
-				LoadMap(*pbarrier);
+				//string str = "map.i";
+				LoadMap(*pbarrier,str);
 			}
 			// 2.2-之前建的旧地图
-			else if(whenMap == 已有地图)
+			else if(whenMap == 已有地图)//here
 			{
+				string str = ShowMaps();
 				pbarrier = new CBarrier;
-				LoadMap(*pbarrier);
+				LoadMap(*pbarrier,str);
+
+				//pbarrier = new CBarrier;
+				//LoadMap(*pbarrier);
 			}
 		}
 		pfood = new CFood(psnake->m_SnakeBody, pbarrier->m_BarrArr);

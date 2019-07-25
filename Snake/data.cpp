@@ -2,8 +2,11 @@
 #include <stdio.h>
 #include <windows.h>
 #include <time.h>
+#include <string>
 #include "data.h"
 #include "func.h"
+using namespace std;
+using std::vector;
 
 int dir[4][2] = { { 0,1 },{ 0,-1 },{ 1,0 },{ -1,0 } };
 int g_SleepTime = 300;		//结合sleep使用，越大越慢（200-400，25为单位，200-1，300-5，400-9）
@@ -18,3 +21,6 @@ int g_BarCount;
 
 int g_foodCount = 0;
 int g_LevelBarrsize = 0;
+
+
+vector<string> g_Maps;

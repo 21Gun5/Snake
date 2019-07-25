@@ -2,6 +2,7 @@
 #include <fstream>
 #include <windows.h>
 #include <string>
+#include <io.h>
 #include <time.h>
 #include <iomanip>
 #include <conio.h>
@@ -10,6 +11,7 @@
 #include "food.h"
 #include "snake.h"
 #include "barrier.h"
+
 using namespace std;
 
 void DrawWelcome()
@@ -243,7 +245,7 @@ void SaveGame(CSnake& snake, CBarrier& barrier, CFood& food)
 	g_BarCount = barrier.m_size;//15
 	//打开文件
 	FILE* pFile = NULL;
-	errno_t err = fopen_s(&pFile, "conf\\game.i", "wb");
+	errno_t err = fopen_s(&pFile, "conf\\game\\game.i", "wb");
 	//写入当前生命值
 	fwrite(&snake.m_Blood, sizeof(int), 1, pFile);
 	//写入当前睡眠时间，以保证速度在读取时也不变
@@ -302,7 +304,7 @@ void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food)
 
 	//打开文件
 	FILE* pFile = NULL;
-	errno_t err = fopen_s(&pFile, "conf\\game.i", "rb");
+	errno_t err = fopen_s(&pFile, "conf\\game\\game.i", "rb");
 
 	//读取生命值 
 	fread(&snake.m_Blood, sizeof(int), 1, pFile);
@@ -481,7 +483,7 @@ int SelectWhenMap()
 	return input;
 }
 
-void SetMap()
+string SetMap()
 {
 	/*
 	1. 用户自定义地图并保存
@@ -524,8 +526,6 @@ void SetMap()
 				COORD pos = ir.Event.MouseEvent.dwMousePosition;//获取按键的位置
 				if (pos.X > 0 && pos.X < MAP_X_WALL && pos.Y >0 && pos.Y < MAP_Y)
 				{
-					//BarrTmp.push_back(pos);//加入数组
-					//barrTmpSize++;
 
 					g_BarrMAP[pos.X][pos.Y] = 1;
 					GotoxyFor2(pos.X / 2, pos.Y);//在这/2真是妙的一匹，5/2*2=4，保证这x方向占两个单位的字符，x只能是偶数，这样能减少出错，妙！
@@ -537,17 +537,6 @@ void SetMap()
 				COORD pos = ir.Event.MouseEvent.dwMousePosition;
 				if (pos.X > 0 && pos.X < MAP_X_WALL && pos.Y >0 && pos.Y < MAP_Y)
 				{
-
-					//for (vector<COORD>::iterator it = BarrTmp.begin(); it!=  BarrTmp.end(); it++)
-					//{
-					//	if (pos.X == it->X && pos.Y == it->Y)//若是数组里的，则删除
-					//	{
-					//		BarrTmp.erase(it);
-					//		barrTmpSize--;
-					//		Gotoxy4s(pos.X/2, pos.Y);
-					//		cout << "  ";
-					//	}
-					//}
 
 					g_BarrMAP[pos.X][pos.Y] = 0;
 					GotoxyFor2(pos.X / 2, pos.Y);
@@ -589,27 +578,52 @@ void SetMap()
 		}
 	}
 
+	//提示信息
+
+	string str;
+	system("cls");
+	setColor(12, 0);
+	Gotoxy(MAP_X - 24, 12);
+	cout << "请输入地图名字" << endl;
+	Gotoxy(MAP_X - 24, 14);
+	cin >> str;
+	setColor(7, 0);
+
+	string str1 = str + ".i";
+	string str2 = "conf\\map\\" + str1;
+	const char* filename = str2.c_str();
+
+
+
+
 	//将数组相关信息写入文件
 	FILE* pFile = NULL;
-	errno_t err = fopen_s(&pFile, "conf\\map.i", "wb");
+	errno_t err = fopen_s(&pFile, filename, "wb");
+	//errno_t err = fopen_s(&pFile, "conf\\map.i", "wb");
 	fwrite(&barrTmpSize, sizeof(int), 1, pFile);//写入障碍物数量
 	for (int i = 0; i < BarrTmp.size(); i++)	//遍历写入障碍物
 	{
 		fwrite(&BarrTmp[i], sizeof(COORD), 1, pFile);
 	}
 	fclose(pFile);
+
+	return str1;
 }
 
-void LoadMap(CBarrier& barrier)
+void LoadMap(CBarrier& barrier,string str)
 {
 	/*
 	1. 导入用户自定义的地图
 	2. 接受者为障碍物对象
 	*/
+	str = "conf\\map\\" + str;
+	const char* filename = str.c_str();//here
+
 
 	COORD tmp;
 	FILE* pFile = NULL;
-	errno_t err = fopen_s(&pFile, "conf\\map.i", "rb");
+	errno_t err = fopen_s(&pFile, filename, "rb");//here
+	//errno_t err = fopen_s(&pFile, "conf\\map.i", "rb");
 	fread(&barrier.m_size, sizeof(int), 1, pFile);	//读取障碍物数量
 	for (int i = 0; i < barrier.m_size; i++)		//遍历读取障碍物
 	{
@@ -618,6 +632,54 @@ void LoadMap(CBarrier& barrier)
 	}
 	fclose(pFile);
 }
+
+//here
+string ShowMaps()
+{
+	//目标文件夹路径
+	std::string inPath = "conf/map/*.i";//遍历文件夹下的所有.jpg文件
+	//用于查找的句柄
+	long handle;
+	_finddata_t fileinfo;
+	//第一次查找
+	handle = _findfirst(inPath.c_str(), &fileinfo);
+	if (handle == -1)
+		return 0;
+	do
+	{
+		g_Maps.push_back(fileinfo.name);
+		//找到的文件的文件名
+		//cout << fileinfo.name;
+		//printf("%s\n", fileinfo.name);
+
+	} while (!_findnext(handle, &fileinfo));
+
+	_findclose(handle);
+
+
+	system("cls");
+	Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 8);
+	cout << "请选择地图" << endl;
+
+	int i = 0;
+	for (; i < g_Maps.size(); i++)
+	{
+		//提示信息
+		Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 6 + i);
+		cout << i + 1 << ". " << g_Maps[i] << endl;
+		//printf("%d. %s\n", i+1, g_MAP[i]);
+		//cout << g_Maps[i].substr() << endl;
+	}
+	Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 6 + i);
+	cout << "请输入选择-> ";
+
+	int input = _getch() - 48;
+
+	return g_Maps[input - 1];
+
+}
+
+
 
 void PlayBGM()
 {

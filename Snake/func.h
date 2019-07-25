@@ -1,7 +1,9 @@
 #pragma once
+#include <string>
 #include "food.h"
 #include "snake.h"
 #include "barrier.h"
+using std::string;
 #pragma comment(lib,"winmm.lib")//播放BGM
 
 void DrawWelcome();				//欢迎界面
@@ -27,9 +29,9 @@ void SaveGame(CSnake& snake, CBarrier& barrier, CFood& food);//存档
 
 void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food);//读档
 
-void SetMap();//自定义地图
+string SetMap();//自定义地图
 
-void LoadMap(CBarrier& barrier);
+void LoadMap(CBarrier& barrier,string str);
 
 void PlayBGM();
 //void PlayGame(CSnake& snake, CBarrier& barrier, CFood& food);
@@ -40,3 +42,5 @@ void SetCursorState(bool b);
 //void HandleSelect(CSnake* psnake, CBarrier* pbarrier, CFood* pfood);
 
 //vector<COORD> CustomizeMap();
+
+string ShowMaps();//here

@@ -1,4 +1,7 @@
 #pragma once
+#include <string>
+#include <vector>
+using namespace std;
 
 //宏定义
 #define UP 1
@@ -48,6 +51,8 @@ extern int g_LevelBarrsize;//障碍物数量，选择难度时用;
 
 extern int g_MAP[MAP_X][MAP_Y];
 extern int g_BarrMAP[MAP_X_WALL][MAP_Y];
+
+extern vector<string> g_Maps;
 
 //坐标结构体（自定义的，系统提供的是COORD
 //typedef struct _POS
