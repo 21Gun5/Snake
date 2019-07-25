@@ -83,11 +83,13 @@ int main()
 	}
 	else if (action == 读取游戏)
 	{
+		string str = ShowGames();
+
 		//创建空对象，以接受文件数据
 		psnake = new CSnake;
 		pbarrier = new CBarrier;
 		pfood = new CFood;
-		LoadGame(*psnake, *pbarrier, *pfood);
+		LoadGame(*psnake, *pbarrier, *pfood,str);
 	}
 	else if (action == 退出游戏)
 	{

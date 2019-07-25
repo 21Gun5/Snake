@@ -27,7 +27,7 @@ void SelectLevel();//处理用户输入（选择难度
 
 void SaveGame(CSnake& snake, CBarrier& barrier, CFood& food);//存档
 
-void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food);//读档
+void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food, string str);//读档
 
 string SetMap();//自定义地图
 
@@ -44,3 +44,5 @@ void SetCursorState(bool b);
 //vector<COORD> CustomizeMap();
 
 string ShowMaps();//here
+
+string ShowGames();//

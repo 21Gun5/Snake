@@ -222,30 +222,30 @@ void setColor(unsigned short ForeColor, unsigned short BackGroundColor)
 //存档
 void SaveGame(CSnake& snake, CBarrier& barrier, CFood& food)
 {
-	////C++方式
-	//ofstream out("conf\\game2.i", ios::out | ios::binary);
-	////写入蛇
-	//for (int i = 0; i < snake.m_SnakeBody.size(); i++)
-	//{
-	//	out.write((char*)&snake.m_SnakeBody[i], sizeof(COORD));
-	//}
-	//out.write((char*)& snake.m_Dir, sizeof(int));
-	//out.write((char*)& snake.m_IsAlive, sizeof(bool));
-	////写入障碍物
-	//for (int i = 0; i < barrier.m_size; i++)
-	//{
-	//	out.write((char*)& barrier.m_BarrArr[i], sizeof(COORD));
-	//}
-	//out.write((char*)& barrier.m_size, sizeof(int));
-	////写入食物
-	//out.write((char*)& food.m_FoodPos, sizeof(COORD));
-	//out.close();
+	//提示信息
+
+	string str;
+	system("cls");
+	setColor(12, 0);
+	Gotoxy(MAP_X - 24, 12);
+	cout << "请输入存档名字" << endl;
+	Gotoxy(MAP_X - 24, 14);
+	cin >> str;
+	setColor(7, 0);
+
+	string str1 = str + ".i";
+	string str2 = "conf\\game\\" + str1;
+	const char* filename = str2.c_str();
+
+
 
 	g_SnaCount = snake.m_SnakeBody.size();//为2
 	g_BarCount = barrier.m_size;//15
 	//打开文件
 	FILE* pFile = NULL;
-	errno_t err = fopen_s(&pFile, "conf\\game\\game.i", "wb");
+
+	errno_t err = fopen_s(&pFile,filename, "wb");
+	//errno_t err = fopen_s(&pFile, "conf\\game\\game.i", "wb");
 	//写入当前生命值
 	fwrite(&snake.m_Blood, sizeof(int), 1, pFile);
 	//写入当前睡眠时间，以保证速度在读取时也不变
@@ -273,38 +273,25 @@ void SaveGame(CSnake& snake, CBarrier& barrier, CFood& food)
 	//关闭文件
 	fclose(pFile);
 
+	
+
 
 
 }
 
 //读档
-void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food)
+void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food,string str)
 {
-	////C++方式
-	//ifstream in("conf\\game2.i", ios::in | ios::binary);
-	//COORD tmp;
-	////读取蛇
-	//for (int i = 0; i < 3; i++)
-	//{
-	//	in.read((char*)& tmp, sizeof(COORD));
-	//	snake.m_SnakeBody.push_back(tmp);
-	//}
-	//in.read((char*)& snake.m_Dir, sizeof(int));
-	//in.read((char*)& snake.m_IsAlive, sizeof(bool));
-	////读取障碍物
-	//for (int i = 0; i < 15; i++)
-	//{
-	//	in.read((char*)& tmp, sizeof(COORD));
-	//	barrier.m_BarrArr.push_back(tmp);
-	//}
-	//in.read((char*)& barrier.m_size, sizeof(int));
-	////读取食物
-	//in.read((char*)& food.m_FoodPos, sizeof(COORD));
-	//in.close();
+
+	str = "conf\\game\\" + str;
+	const char* filename = str.c_str();//here
+
+
 
 	//打开文件
 	FILE* pFile = NULL;
-	errno_t err = fopen_s(&pFile, "conf\\game\\game.i", "rb");
+	errno_t err = fopen_s(&pFile, filename, "rb");
+	//errno_t err = fopen_s(&pFile, "conf\\game\\game.i", "rb");
 
 	//读取生命值 
 	fread(&snake.m_Blood, sizeof(int), 1, pFile);
@@ -339,19 +326,53 @@ void LoadGame(CSnake& snake, CBarrier& barrier, CFood& food)
 	fclose(pFile);
 
 
-	////打开文件
-	//FILE* pFile = NULL;
-	//errno_t err = fopen_s(&pFile, "conf\\game2.i", "rb");
-	////读取文件
-	//fread(&snake, sizeof(CSnake), 1, pFile);
-	//fread(&barrier, sizeof(CBarrier), 1, pFile);
-	//fread(&food, sizeof(CFood), 1, pFile);
-	////关闭文件
-	//fclose(pFile);
-
 }
 
+//here
+string ShowGames()
+{
+	//目标文件夹路径
+	std::string inPath = "conf/game/*.i";//遍历文件夹下的所有.jpg文件
+	//用于查找的句柄
+	long handle;
+	_finddata_t fileinfo;
+	//第一次查找
+	handle = _findfirst(inPath.c_str(), &fileinfo);
+	if (handle == -1)
+		return 0;
+	do
+	{
+		g_Maps.push_back(fileinfo.name);
+		//找到的文件的文件名
+		//cout << fileinfo.name;
+		//printf("%s\n", fileinfo.name);
 
+	} while (!_findnext(handle, &fileinfo));
+
+	_findclose(handle);
+
+
+	system("cls");
+	Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 8);
+	cout << "请选择存档" << endl;
+
+	int i = 0;
+	for (; i < g_Maps.size(); i++)
+	{
+		//提示信息
+		Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 6 + i);
+		cout << i + 1 << ". " << g_Maps[i] << endl;
+		//printf("%d. %s\n", i+1, g_MAP[i]);
+		//cout << g_Maps[i].substr() << endl;
+	}
+	Gotoxy(MAP_X / 2 - 10, MAP_Y / 2 - 6 + i);
+	cout << "请输入选择-> ";
+
+	int input = _getch() - 48;
+
+	return g_Maps[input - 1];
+
+}
 
 
 
@@ -483,6 +504,7 @@ int SelectWhenMap()
 	return input;
 }
 
+//here
 string SetMap()
 {
 	/*
@@ -609,7 +631,7 @@ string SetMap()
 
 	return str1;
 }
-
+//here
 void LoadMap(CBarrier& barrier,string str)
 {
 	/*
@@ -632,7 +654,6 @@ void LoadMap(CBarrier& barrier,string str)
 	}
 	fclose(pFile);
 }
-
 //here
 string ShowMaps()
 {
@@ -678,8 +699,6 @@ string ShowMaps()
 	return g_Maps[input - 1];
 
 }
-
-
 
 void PlayBGM()
 {
